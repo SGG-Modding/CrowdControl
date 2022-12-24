@@ -1,0 +1,3 @@
+Import "CrowdControlHadesDraft.lua"
+To "StyxScribeScripts/CrowdControlHadesDraft.py"
+Replace "CrowdControlHadesDraft.py"
