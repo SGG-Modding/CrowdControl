@@ -1,84 +1,84 @@
-ModUtil.Mod.Register( "CrowdControlHadesDraft" )
+-- Depends on ModUtil, StyxScribe, StyxScribeShared
 
-local conditions = {
-	NextChamber = function( id )
-		-- whatever it takes to make it trigger after the next chamber's entrance presentation ends
-		local success = true
-		return success
-	end,
-	NextEncounter = ...,
-	Anywhere = ...,
-	...	
+ModUtil.Mod.Register( "CrowdControlHadesDraft" )
+local doAction, shared
+
+-- Effect Definitions
+
+local triggers = {
+	Instant = function( id, action ) return doAction( id, action ) end
 }
 
--- possibly helpful internal things for the gritty of implementing some effects
-local internalEffectCallbacks = { } -- map from id to function that cancels the effect
-local internalEffectEndTimes = { } -- map from id to _screenTime beyond which the effect should cancel
-
 local actions = {
-	SpawnSkulls = function( id )
-		-- spawn skulls
-		local success -- if it succeeded
-		return success
-	end,
-	...
+	HelloWorld = function( id )
+		ModUtil.Hades.PrintStack( "Hello World!" )
+	end
 }
 
 local effectData = {
-	SpawnSkulls = { Condition = conditions.NextChamber, Action = actions.SpawnSkulls },
-	...
+	HelloWorldInstant = { Trigger = triggers.Instant, Action = actions.HelloWorld }
 }
 
-local effectsByID = { }
+-- Implementation
 
+local effectsByID = { }
 local effectQueue = { }
 
-local function handleEffectRequest( message )
-	-- split the message and marshal components if necessary
-	-- any other information from the message?
-	local effect = message
-	-- make a new table so we get a unique ID
-	-- if there's an ID system for effect instances from SDK or python,
-	-- 		use that ID forwarded in the message instead of this id
-	local id = { }
-	effectsById[ id ] = effect
-	table.insert( effectQueue, id )
+local function triggerEffect( id, result )
+	return shared.TriggerEffect( id, result )
 end
 
-local function respondSuccess( id )
-	local effect = effectsById[ id ]
-	-- assuming we're not using an ID system in the SDK at the moment
-	-- if we were then we'd just send the ID instead of the effect name
-	StyxScribe.Send( "CrowdControlHadesDraft: " .. effect )
+function doAction( id, action )
+	if action( id ) ~= false then
+		triggerEffect( id, "Success" )
+		effectsByID[ id ] = nil
+		return true
+	end
+	return false
 end
 
-local function triggerEffects( )
+local function prepareEffects( )
 	for i = 1, #effectQueue do
 		local id = effectQueue[ i ]
-		local effect = effectsById[ id ]
+		local effect = effectsByID[ id ]
 		local data = effectData[ effect ]
-		if data.Condition( id ) then
-			if data.Action( id ) then 
-				respondSuccess( id )
-				effectQueue[ i ] = nil
-				effectsById[ id ] = nil
-			end
+		if data.Trigger( id, data.Action ) then
+			effectQueue[ i ] = nil
 		end
 	end
 	CollapseTable( effectQueue )
 end
 
-local function effectLoop = function( )
+local function effectLoop( )
 	while true do
-		wait( 0.5 ) -- whatever is necessary to make it not laggy when a lot of effects are requested
-		triggerEffects( )
+		wait( 0.25 )
+		prepareEffects( )
 	end
 end
 
+function queueEffect( id, effect )
+	effectsByID[ id ] = effect
+	table.insert( effectQueue, id )
+end
+
+local function initShared( )
+	local root = StyxScribeShared.Root
+	shared = root.CrowdControlHadesDraft
+	if not shared then
+		root.CrowdControlHadesDraft = { }
+		shared = root.CrowdControlHadesDraft
+	end
+	shared.QueueEffect = queueEffect
+end
+
+-- Internal
+
 CrowdControlHadesDraft.Internal = ModUtil.UpValues( function( )
-	return actions, conditions, effectsByID, effectData, effectQueue, effectLoop, respondSuccess, triggerEffects, handleEffectRequest
+	return doAction, actions, triggers, effectsByID, effectData, effectQueue, effectLoop, queueEffect, triggerEffect, prepareEffects, initShared
 end )
 
-StyxScribe.AddHook( handleEffectRequest, "CrowdControlHadesDraft: ", CrowdControlHadesDraft )
+StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControlHadesDraft )
+
+initShared( )
 
 thread( effectLoop )
