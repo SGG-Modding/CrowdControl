@@ -23,4 +23,4 @@ do
 end
 
 -- put our effects into the centralised Effects table
-ModUtil.Path.Set( "Hades.Examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
+ModUtil.Path.Set( "Examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
