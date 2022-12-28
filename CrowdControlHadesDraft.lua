@@ -1,7 +1,7 @@
 -- Depends on ModUtil, StyxScribe, StyxScribeShared
 
 ModUtil.Mod.Register( "CrowdControlHadesDraft" )
-local doAction, shared
+local shared, doAction, dispatchActions
 
 -- Effect Definitions
 
@@ -19,6 +19,39 @@ local effectData = {
 	HelloWorldInstant = { Trigger = triggers.Instant, Action = actions.HelloWorld }
 }
 
+--[[
+	Helper for implementing triggers
+	
+	actionMap - a map/dictionary from id to action
+	idQueue - an array/sequence table of ids
+
+--]]
+function dispatchActions( actionMap, idQueue )
+	if idQueue then
+		-- if you provide an id queue then we will mutate that
+		-- this way actions are invoked in insertion order
+		local n = #idQueue
+		if n == 0 then return end
+		for i = 1, n do
+			local id = idQueue[ i ]
+			local action = actionMap[ id ]
+			if doAction( id, action ) then
+				idQueue[ i ] = nil
+			end
+		end
+		CollapseTable( idQueue )
+	else
+		-- if you don't provide an id queue then we will mutate the map
+		-- this means invocation order is implementation detail / undefined behaviour
+		-- also I can't remember if it's safe to mutate while using the pairs iterator
+		for id, action in pairs( actionMap ) do
+			if doAction( id, action ) then
+				actionMap[ id ] = nil
+			end
+		end
+	end
+end
+
 -- Implementation
 
 local function triggerEffect( id, result )
@@ -26,8 +59,9 @@ local function triggerEffect( id, result )
 end
 
 function doAction( id, action )
-	if action( id ) ~= false then
-		triggerEffect( id, "Success" )
+	local result = action( id )
+	if result ~= false then
+		triggerEffect( id, result )
 		return true
 	end
 	return false
@@ -51,7 +85,7 @@ end
 -- Internal
 
 CrowdControlHadesDraft.Internal = ModUtil.UpValues( function( )
-	return doAction, actions, triggers, effectData, queueEffect, triggerEffect, initShared
+	return doAction, actions, triggers, effectData, queueEffect, triggerEffect, initShared, dispatchActions
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControlHadesDraft )
