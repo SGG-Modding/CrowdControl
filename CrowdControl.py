@@ -17,10 +17,10 @@ def Load():
     def initShared(message):
         global Shared
         root = scribe.modules.StyxScribeShared.Root
-        Shared = root.CrowdControlHadesDraft
+        Shared = root.CrowdControl
         if not Shared:
-            root.CrowdControlHadesDraft = {}
-            Shared = root.CrowdControlHadesDraft
+            root.CrowdControl = {}
+            Shared = root.CrowdControl
         Shared.NotifyEffect = NotifyEffect
 
     Internal["initShared"] = initShared

@@ -52,7 +52,14 @@ function requestEffect( id, effect )
 	if not data and type( effect ) == "string" then
 		data = ModUtil.Path.Get( CrowdControl.Effects, effect )
 	end
-	return data.Trigger( id, data.Action )
+	if not data then
+		notifyEffect( id, "MISSING" )
+	end
+	if data.Trigger and data.Action then
+		return data.Trigger( id, data.Action )
+	else
+		notifyEffect( id, "MALFORMED" )
+	end
 end
 
 local function initShared( )
