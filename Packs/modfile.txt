@@ -1,6 +1,6 @@
-Import "CrowdControl.Packs.Base.Examples.lua"
+Import "CrowdControl.Packs.Examples.lua"
 Import "CrowdControl.Packs.Hades.Examples.lua"
 
 Load Priority 20
 Import "CrowdControl.Packs.Base.lua"
-Import "CrowdControl.Packs.Hades.lua"
+Import "CrowdControl.Packs.Hades.Base.lua"
