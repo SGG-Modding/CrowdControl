@@ -1,11 +1,6 @@
-Import "CrowdControl.Packs.Base.Examples.lua"
-Import "CrowdControl.Packs.Hades.Examples.lua"
+Include "Packs/modfile.txt"
 
 Load Priority 10
-Import "CrowdControl.Packs.Base.lua"
-Import "CrowdControl.Packs.Hades.lua"
-
-To "Scripts/Main.lua"
 Import "CrowdControl.lua"
 To "StyxScribeScripts/CrowdControl.py"
 Replace "CrowdControl.py"
