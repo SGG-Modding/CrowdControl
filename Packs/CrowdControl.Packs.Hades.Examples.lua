@@ -1,49 +1,28 @@
-local cc, within, packs = CrowdControl, ModUtil.Context.Data, CrowdControl.Packs
+local cc, packs = CrowdControl, CrowdControl.Packs
 local pack = ModUtil.Mod.Register( "Examples", packs.Hades )
 
-within( cc, function( ) within( pack, function( )
+pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
+pack.Parametric = { Actions = { }, Triggers = { } }
 
-	Parametric = { }
-	
+do
 	-- Triggers
-	Triggers = within( { }, function( )
-		
-	end )
-	
-	Parametric.Triggers = within( { }, function( )
-		
-	end )
 	
 	-- Actions
-	Actions = within( { }, function( )
-	
-		function Suicide( id )
-			KillHero( { }, { }, { }
-			return NotifyEffect( id )
-		end
-	
-	end )
-	Parametric.Actions = within( { }, function( )
-		
-		function PrintStack( ... )
-			return function( id )
-				ModUtil.Hades.PrintStack( ... )
-				return NotifyEffect( id )
-			end
-		end
-		
-	end )
+	function pack.Actions.Suicide( id )
+		KillHero( { }, { }, { } )
+		return cc.NotifyEffect( id )
+	end
+
+	function pack.Parametric.Actions.PrintStack( ... )
+		return packs.Base.Parametric.Actions.Invoke( ModUtil.Hades.PrintStack, ... )
+	end
 	
 	-- Effects
-	Effects = within( { }, function( )
-	
-		HelloWorld = { Trigger = packs.Base.Triggers.Instant, Action = Actions.Parametric.PrintStack( "Hello World!" ) }
-		DelayedSuicide = { Trigger = packs.Base.Parametric.Triggers.Delay( 5 ), Action = Actions.Suicide }
+	pack.Effects.HelloWorld = { Trigger = packs.Base.Triggers.Instant, Action = pack.Parametric.Actions.PrintStack( "Hello World!" ) }
+	pack.Effects.DelayedSuicide = { Trigger = packs.Base.Parametric.Triggers.Delay( 5 ), Action = pack.Actions.Suicide }
 		
-	end )
-		
-end ) end )
+end
 
 -- put our effects into the centralised Effects table
 
-ModUtil.Path.Set( "Hades.Examples.Effects", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
+ModUtil.Path.Set( "Hades.Examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
