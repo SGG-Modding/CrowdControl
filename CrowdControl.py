@@ -1,6 +1,6 @@
 # Depends on StyxScribeShared
 
-__all__ = ["Load", "RequestEffect", "NotifyEffect"]
+__all__ = ["Load", "RequestEffect", "NotifyEffect", "Internal"]
 Internal = {}
 
 Shared = None
