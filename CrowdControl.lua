@@ -43,6 +43,8 @@ local function bindEffect( effect, value )
 	end
 end
 
+-- TODO: timed effect helpers
+
 -- Implementation
 
 local function notifyEffect( id, result )
@@ -75,22 +77,12 @@ local function initShared( )
 	end
 	CrowdControl.Shared = shared
 	shared.RequestEffect = requestEffect
-
-	shared.InvokeEffects = invokeEffects
-	shared.BindEffect = bindEffect
-
-	shared.Effects = shared.Effects or { }
-	shared.Packs = shared.Packs or { }
-
-	CrowdControl.Effects = shared.Effects
-	CrowdControl.Packs = shared.Packs
 end
 
 -- API
 
 CrowdControl.Shared = nil
-CrowdControl.Effects = nil
-CrowdControl.Packs = nil
+CrowdControl.Effects = { }
 
 CrowdControl.RequestEffect = requestEffect
 CrowdControl.NotifyEffect = notifyEffect
