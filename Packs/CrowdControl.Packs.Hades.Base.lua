@@ -1,5 +1,5 @@
 local cc = CrowdControl
-local packs = setmetatable( ModUtil.Mod.Register( "Hades", cc.Packs ), nil )
+local packs = ModUtil.Mod.Register( "Hades", cc.Packs, false )
 local pack = ModUtil.Mod.Register( "Base", packs )
 
 pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
@@ -10,17 +10,21 @@ do
 	-- Triggers
 
 	-- use any of the base game's triggers as effect triggers
+	-- might have issues with triggers that take extra arguments
 	onTrigger = { }
-	function pack.Parametric.Triggers.OnTrigger( name, ... )
+	function pack.Parametric.Triggers.OnTrigger( trigger, ... )
 
-		local toTrigger = onTrigger[ name ]
+		if type( trigger ) == "string" then
+			trigger = ModUtil.Path.Get( trigger )
+		end
+		local toTrigger = onTrigger[ trigger ]
 		if not toTrigger then
 			toTrigger = { ids = { }, actions = { } }
-			onTrigger[ name ] = toTrigger
+			onTrigger[ trigger ] = toTrigger
 			local function runTriggers( ... )
 				cc.InvokeActions( toTrigger.actions, toTrigger.ids, ... )
 			end
-			ModUtil.Path.Get( name ){ runTriggers, ... }
+			trigger( { runTriggers, ... } )
 		end
 		
 		return function( id, action )
@@ -39,7 +43,7 @@ do
 	-- Effects
 end
 
--- put our effects into the centralised Effects table
+-- put our effects into the centralised Effects table, under the "Hades" path
 -- (but there are no effects in this pack)
 -- ModUtil.Path.Set( "Hades", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
 

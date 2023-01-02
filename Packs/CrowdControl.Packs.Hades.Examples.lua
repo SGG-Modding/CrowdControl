@@ -1,5 +1,5 @@
 local cc, packs = CrowdControl, CrowdControl.Packs
-local pack = ModUtil.Mod.Register( "Examples", packs.Hades )
+local pack = ModUtil.Mod.Register( "Examples", packs.Hades, false )
 
 pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
 pack.Parametric = { Actions = { }, Triggers = { } }
@@ -18,11 +18,10 @@ do
 	end
 	
 	-- Effects
-	pack.Effects.HelloWorld = { Trigger = packs.Base.Triggers.Instant, Action = pack.Parametric.Actions.PrintStack( "Hello World!" ) }
-	pack.Effects.DelayedSuicide = { Trigger = packs.Base.Parametric.Triggers.Delay( 5 ), Action = pack.Actions.Suicide }
+	pack.Effects.HelloWorld = pack.Parametric.Actions.PrintStack( "Hello World!" )
+	pack.Effects.DelayedSuicide = cc.BindEffect( packs.Base.Parametric.Triggers.Delay( 5 ), pack.Actions.Suicide )
 		
 end
 
--- put our effects into the centralised Effects table
-
+-- put our effects into the centralised Effects table, under the "Hades.Examples" path
 ModUtil.Path.Set( "Hades.Examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )

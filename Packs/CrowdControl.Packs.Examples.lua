@@ -1,5 +1,5 @@
 local cc, packs = CrowdControl, CrowdControl.Packs
-local pack = ModUtil.Mod.Register( "Examples", packs )
+local pack = ModUtil.Mod.Register( "Examples", packs, false )
 
 pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
 pack.Parametric = { Actions = { }, Triggers = { } }
@@ -22,11 +22,11 @@ do
 	end
 
 	-- Effects
-	pack.Effects.HelloWorld = { Trigger = packs.Base.Triggers.Instant, Action = packs.Base.Parametric.Actions.Invoke( ModUtil.Print, "Hello World!" ) }
+	pack.Effects.HelloWorld = packs.Base.Parametric.Actions.Invoke( ModUtil.Print, "Hello World!" )
 	if StyxScribeREPL then
-		pack.Effects.DelayedQuit = { Trigger = packs.Base.Parametric.Triggers.Delay( 5 ), Action = pack.Actions.Quit }
+		pack.Effects.DelayedQuit = cc.BindEffect( packs.Base.Parametric.Triggers.Delay( 5 ), pack.Actions.Quit )
 	end
 end
 
--- put our effects into the centralised Effects table
+-- put our effects into the centralised Effects table, under the "Examples" path
 ModUtil.Path.Set( "Examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )

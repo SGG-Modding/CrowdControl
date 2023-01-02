@@ -4,25 +4,24 @@ ModUtil.Mod.Register( "CrowdControl" )
 
 local shared
 
---[[
-	Helper for implementing triggers
-	
-	actionMap - a map/dictionary from id to action
-	idQueue - an array/sequence table of ids
+-- Helpers
 
+--[[
+	effectMap - a map/dictionary from id to effect
+	idQueue - an array/sequence table of ids
 --]]
-local function invokeActions( actionMap, idQueue, ... )
+local function invokeEffects( effectMap, idQueue, ... )
 	if idQueue then
 		-- if you provide an id queue then we will mutate that as well
-		-- this way actions are invoked in insertion order
+		-- this way effects are invoked in insertion order
 		local n = #idQueue
 		if n == 0 then return end
 		for i = 1, n do
 			local id = idQueue[ i ]
-			local action = actionMap[ id ]
-			if action( id, ... ) ~= false then
+			local effect = effectMap[ id ]
+			if effect( id, ... ) ~= false then
 				idQueue[ i ] = nil
-				actionMap[ id ] = nil
+				effectMap[ id ] = nil
 			end
 		end
 		CollapseTable( idQueue )
@@ -30,11 +29,17 @@ local function invokeActions( actionMap, idQueue, ... )
 		-- if you don't provide an id queue then we will just mutate the map
 		-- this means invocation order is implementation detail / undefined behaviour
 		-- also I can't remember if it's safe to mutate while using the pairs iterator
-		for id, action in pairs( actionMap ) do
-			if action( id, ... ) ~= false then
-				actionMap[ id ] = nil
+		for id, effect in pairs( effectMap ) do
+			if effect( id, ... ) ~= false then
+				effectMap[ id ] = nil
 			end
 		end
+	end
+end
+
+local function bindEffect( effect, value )
+	return function( id, ... )
+		return effect( id, value, ... )
 	end
 end
 
@@ -44,21 +49,21 @@ local function notifyEffect( id, result )
 	return shared.NotifyEffect( id, result )
 end
 
-function requestEffect( id, effect )
+local function requestEffect( id, effect )
 	if ModUtil.Callable( effect ) then
 		return effect( id )
 	end
-	local data = CrowdControl.Effects[ effect ]
-	if not data and type( effect ) == "string" then
-		data = ModUtil.Path.Get( effect, CrowdControl.Effects )
+	local func = CrowdControl.Effects[ effect ]
+	if not ModUtil.Callable( func ) and type( effect ) == "string" then
+		func = ModUtil.Path.Get( effect, CrowdControl.Effects )
 	end
-	if not data then
+	if not func then
 		return notifyEffect( id, "MISSING" )
 	end
-	if not data.Trigger or not data.Action then
+	if not ModUtil.Callable( func ) then
 		return notifyEffect( id, "MALFORMED" )
 	end
-	return data.Trigger( id, data.Action )
+	return func( id )
 end
 
 local function initShared( )
@@ -70,21 +75,33 @@ local function initShared( )
 	end
 	CrowdControl.Shared = shared
 	shared.RequestEffect = requestEffect
-	shared.InvokeActions = invokeActions
+
+	shared.InvokeEffects = invokeEffects
+	shared.BindEffect = bindEffect
+
+	shared.Effects = shared.Effects or { }
+	shared.Packs = shared.Packs or { }
+
+	CrowdControl.Effects = shared.Effects
+	CrowdControl.Packs = shared.Packs
 end
 
 -- API
 
 CrowdControl.Shared = nil
-CrowdControl.Effects = { }
+CrowdControl.Effects = nil
+CrowdControl.Packs = nil
+
 CrowdControl.RequestEffect = requestEffect
-CrowdControl.InvokeActions = invokeActions
 CrowdControl.NotifyEffect = notifyEffect
+
+CrowdControl.InvokeEffects = invokeEffects
+CrowdControl.BindEffect = bindEffect
 
 -- Internal
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
-	return requestEffect, notifyEffect, initShared, invokeActions
+	return initShared, requestEffect, notifyEffect, invokeEffects, bindEffect
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControl )
