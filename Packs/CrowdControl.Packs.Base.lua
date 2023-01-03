@@ -7,11 +7,12 @@
 	* We will see what the convention ends up being used
 
 	Effects: (AKA Effect Functions)
+	* Keys in the CrowdControl.Effects table must always be purely lowercase strings, for technical reasons 
 	* Can be of any 'order':
 		- A function that directly affects the game is a first order effect
 		- A function that dynamically delegates to another function to affect the game is a second order effect
 		- etc...
-	* Effects have a responsibility to eventually call NotifyEffect on their id (by default this reports success)
+	* Effects have a responsibility to eventually call NotifyEffect on their id (by default this reports Success)
 	* An effect can be formed by binding a trigger with an action via BindEffect (see below for triggers and actions)
 
 	The following are optional abstractions:
@@ -27,7 +28,7 @@
 	* The trigger must eventually invoke the action with the id passed in
 	* Ideally if the action specifically returns false, and it's possible to retry the action, eventually do so
 	* Triggers that handle their actions in batches may benefit from using InvokeEffects
-	* If an action that returns false can't be retried, report "RETRY" via NotifyEffect so it can start from the top
+	* If an action that returns false can't be retried, report "Retry" via NotifyEffect so it can start from the top
 
 	Parametric: (for Parametric.Actions and Parametric.Triggers)
 	* Not directly a trigger or action, until called with some arguments (one step removed to be more general)

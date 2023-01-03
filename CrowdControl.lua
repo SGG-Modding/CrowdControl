@@ -59,11 +59,8 @@ local function requestEffect( id, effect )
 	if not ModUtil.Callable( func ) and type( effect ) == "string" then
 		func = ModUtil.Path.Get( effect, CrowdControl.Effects )
 	end
-	if not func then
-		return notifyEffect( id, "MISSING" )
-	end
 	if not ModUtil.Callable( func ) then
-		return notifyEffect( id, "MALFORMED" )
+		return notifyEffect( id, "Unavailable" )
 	end
 	return func( id )
 end

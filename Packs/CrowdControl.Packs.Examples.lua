@@ -22,11 +22,11 @@ do
 	end
 
 	-- Effects
-	pack.Effects.HelloWorld = packs.Base.Parametric.Actions.Invoke( ModUtil.Print, "Hello World!" )
+	pack.Effects.helloworld = packs.Base.Parametric.Actions.Invoke( ModUtil.Print, "Hello World!" )
 	if StyxScribeREPL then
-		pack.Effects.DelayedQuit = cc.BindEffect( packs.Base.Parametric.Triggers.Delay( 5 ), pack.Actions.Quit )
+		pack.Effects.delayedquit = cc.BindEffect( packs.Base.Parametric.Triggers.Delay( 5 ), pack.Actions.Quit )
 	end
 end
 
--- put our effects into the centralised Effects table, under the "Examples" path
-ModUtil.Path.Set( "Examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
+-- put our effects into the centralised Effects table, under the "examples" path
+ModUtil.Path.Set( "examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )

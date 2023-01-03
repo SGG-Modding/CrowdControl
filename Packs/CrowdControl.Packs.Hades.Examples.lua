@@ -18,10 +18,10 @@ do
 	end
 	
 	-- Effects
-	pack.Effects.HelloWorld = pack.Parametric.Actions.PrintStack( "Hello World!" )
-	pack.Effects.DelayedSuicide = cc.BindEffect( packs.Base.Parametric.Triggers.Delay( 5 ), pack.Actions.Suicide )
+	pack.Effects.helloworld = pack.Parametric.Actions.PrintStack( "Hello World!" )
+	pack.Effects.delayedsuicide = cc.BindEffect( packs.Base.Parametric.Triggers.Delay( 5 ), pack.Actions.Suicide )
 		
 end
 
--- put our effects into the centralised Effects table, under the "Hades.Examples" path
-ModUtil.Path.Set( "Hades.Examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
+-- put our effects into the centralised Effects table, under the "hades.examples" path
+ModUtil.Path.Set( "hades.examples", ModUtil.Table.Copy( pack.Effects ), cc.Effects )

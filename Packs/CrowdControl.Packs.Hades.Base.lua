@@ -43,9 +43,9 @@ do
 	-- Effects
 end
 
--- put our effects into the centralised Effects table, under the "Hades" path
+-- put our effects into the centralised Effects table, under the "hades" path
 -- (but there are no effects in this pack)
--- ModUtil.Path.Set( "Hades", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
+-- ModUtil.Path.Set( "hades", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
 
 -- Internal
 

@@ -9,12 +9,16 @@ Internal = {}
 
 Shared = None
 
-def NotifyEffect(eid, result):
-    # handle the response here
-    print(f"Python got response {result} for event with ID {eid}")
+def NotifyEffect(eid, result=None):
+    if result is None:
+        result = "Success"
+    print(f"CrowdControl: Responding with {result} for effect with ID {eid}")
     thread.socket.send(json.dumps({"id":eid, "status":result}).encode('utf-8'))
 
 def RequestEffect(eid, effect):
+    if isinstance(effect, str):
+        effect = effect.replace('_','.').casefold()
+    print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
     return Shared.RequestEffect(eid, effect)
 
 thread = None
@@ -51,10 +55,11 @@ class AppSocketThread(threading.Thread):
                 message = message.decode('utf-8')
                 message = json.loads(message[:-1])
                 eid = message["id"]
-                effect = message["code"]
                 if Shared is None:
                     print(f"CrowdControl: Need to be loaded into a save to run effects!")
+                    NotifyEffect(eid, "NotReady")
                     continue
+                effect = message["code"]
                 RequestEffect(eid, effect)
 
 def Load():
