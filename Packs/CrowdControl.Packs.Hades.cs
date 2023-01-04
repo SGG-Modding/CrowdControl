@@ -19,7 +19,7 @@ namespace CrowdControl.Games.Packs
 
         public override List<Effect> Effects { get; } = new()
         {
-            new Effect("Hello World", "hades_examples_helloworld"),
+            new Effect("Hello World", "Hades.Examples.HelloWorld"),
         };
     }
 }

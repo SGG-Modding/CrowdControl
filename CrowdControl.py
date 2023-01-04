@@ -16,8 +16,6 @@ def NotifyEffect(eid, result=None):
     thread.socket.send(json.dumps({"id":eid, "status":result}).encode('utf-8'))
 
 def RequestEffect(eid, effect):
-    if isinstance(effect, str):
-        effect = effect.replace('_','.').casefold()
     print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
     return Shared.RequestEffect(eid, effect)
 
@@ -45,22 +43,25 @@ class AppSocketThread(threading.Thread):
                 s.connect((self.host,self.port))
                 print(f"CrowdControl: Connected on {self.host}:{self.port}")
                 self.socket = s
+                while True:
+                    message = s.recv(1042)
+                    if not message:
+                        continue
+                    message = message.decode('utf-8')
+                    message = json.loads(message[:-1])
+                    eid = message["id"]
+                    if Shared is None:
+                        print(f"CrowdControl: Need to be loaded into a save to run effects!")
+                        NotifyEffect(eid, "NotReady")
+                        continue
+                    effect = message["code"]
+                    RequestEffect(eid, effect)
+            except ConnectionResetError:
+                time.sleep(15)
+                continue
             except ConnectionRefusedError:
                 time.sleep(5)
                 continue
-            while True:
-                message = s.recv(1042)
-                if not message:
-                    continue
-                message = message.decode('utf-8')
-                message = json.loads(message[:-1])
-                eid = message["id"]
-                if Shared is None:
-                    print(f"CrowdControl: Need to be loaded into a save to run effects!")
-                    NotifyEffect(eid, "NotReady")
-                    continue
-                effect = message["code"]
-                RequestEffect(eid, effect)
 
 def Load():
     #start the app socket thread
