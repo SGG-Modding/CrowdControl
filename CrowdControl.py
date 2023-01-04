@@ -47,8 +47,8 @@ class AppSocketThread(threading.Thread):
                     message = s.recv(1042)
                     if not message:
                         continue
-                    message = message.decode('utf-8')
-                    message = json.loads(message[:-1])
+                    message = message.decode('utf-8').replace(u'\x00','')
+                    message = json.loads(message)
                     eid = message["id"]
                     if Shared is None:
                         print(f"CrowdControl: Need to be loaded into a save to run effects!")
