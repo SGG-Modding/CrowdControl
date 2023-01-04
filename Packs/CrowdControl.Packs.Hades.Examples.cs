@@ -20,6 +20,9 @@ namespace CrowdControl.Games.Packs
         public override List<Effect> Effects { get; } = new()
         {
             new Effect("Hello World", "Hades.Examples.HelloWorld"),
+			new Effect("Delayed Suicide", "Hades.Examples.DelayedSuicide"),
+			new Effect("Timed Suicide", "Hades.Examples.TimedSuicide"),
+			new Effect("Dispay 5 Second Timer", "Hades.Examples.Display5SecTimer"){Duration = 5},
         };
     }
 }

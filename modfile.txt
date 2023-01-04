@@ -1,6 +1,7 @@
+Load Priority 10
+Import "CrowdControl.lua"
 Include "Packs/modfile.txt"
 
 Load Priority 10
-Import "CrowdControl.lua"
 To "StyxScribeScripts/CrowdControl.py"
 Replace "CrowdControl.py"

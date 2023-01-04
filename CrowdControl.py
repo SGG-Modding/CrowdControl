@@ -10,13 +10,16 @@ Shared = None
 
 effects = set()
 
-def NotifyEffect(eid, result=None):
+def NotifyEffect(eid, result=None, timeRemaining=None):
     if result is None:
         result = "Success"
     if eid in effects:
         effects.remove(eid)
     print(f"CrowdControl: Responding with {result} for effect with ID {eid}")
-    thread.socket.send(json.dumps({"id":eid, "status":result}).encode('utf-8')+b'\x00')
+    message = {"id":eid, "status":result}
+    if timeRemaining is not None:
+        message["timeRemaining"] = timeRemaining
+    thread.socket.send(json.dumps(message).encode('utf-8')+b'\x00')
 
 def RequestEffect(eid, effect):
     print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
