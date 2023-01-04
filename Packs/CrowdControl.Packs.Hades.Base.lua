@@ -21,8 +21,9 @@ do
 		if not toTrigger then
 			toTrigger = { ids = { }, actions = { } }
 			onTrigger[ trigger ] = toTrigger
+			cc.HandleEffects( toTrigger.actions, toTrigger.ids )
 			local function runTriggers( ... )
-				cc.InvokeActions( toTrigger.actions, toTrigger.ids, ... )
+				cc.InvokeEffects( toTrigger.actions, toTrigger.ids, ... )
 			end
 			trigger( { runTriggers, ... } )
 		end

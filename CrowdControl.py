@@ -1,23 +1,28 @@
-# Depends on StyxScribeShared
+# Depends on StyxScribeShared, StyxScribeActive
 import socket
 import time
 import threading
 import json
 
 __all__ = ["Load", "RequestEffect", "NotifyEffect", "Internal"]
-Internal = {}
 
 Shared = None
+
+effects = set()
 
 def NotifyEffect(eid, result=None):
     if result is None:
         result = "Success"
+    if eid in effects:
+        effects.remove(eid)
     print(f"CrowdControl: Responding with {result} for effect with ID {eid}")
     thread.socket.send(json.dumps({"id":eid, "status":result}).encode('utf-8')+b'\x00')
 
 def RequestEffect(eid, effect):
     print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
-    return Shared.RequestEffect(eid, effect)
+    effects.add(eid)
+    sentTime = time.time() - Scribe.Modules.StyxScribeActive.Start
+    return Shared.RequestEffect(eid, effect, sentTime)
 
 thread = None
 class AppSocketThread(threading.Thread):
@@ -37,7 +42,7 @@ class AppSocketThread(threading.Thread):
     def run(self):
         print("CrowdControl: Socket Thread Running!")
         while True:
-            print(f"CrowdControl: Attempting to connect on {self.host}:{self.port}")
+            #print(f"CrowdControl: Attempting to connect on {self.host}:{self.port}")
             try:
                 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                 s.connect((self.host,self.port))
@@ -76,6 +81,10 @@ def Load():
             Shared = root.CrowdControl
         Shared.NotifyEffect = NotifyEffect
 
-    Internal["initShared"] = initShared
+    def onInactive():
+        for e in tuple(effects):
+            NotifyEffect(e,"Retry")
+        effects.clear()
 
     Scribe.AddHook(initShared, "StyxScribeShared: Reset", __name__)
+    Scribe.Modules.StyxScribeActive.OnInactive(onInactive)

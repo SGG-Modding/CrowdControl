@@ -13,6 +13,7 @@
 		- A function that dynamically delegates to another function to affect the game is a second order effect
 		- etc...
 	* Effects have a responsibility to eventually call NotifyEffect on their id (by default this reports Success)
+	* Any time an effect is invoked, it should be via InvokeEffect in case of timeouts
 	* An effect can be formed by binding a trigger with an action via BindEffect (see below for triggers and actions)
 
 	The following are optional abstractions:
@@ -34,7 +35,7 @@
 	* Not directly a trigger or action, until called with some arguments (one step removed to be more general)
 ]]
 
-local cc = CrowdControl
+local cc, invoke = CrowdControl, CrowdControl.InvokeEffect
 local packs = ModUtil.Mod.Register( "Packs", cc, false )
 local pack = ModUtil.Mod.Register( "Base", packs )
 
@@ -44,15 +45,15 @@ pack.Parametric = { Actions = { }, Triggers = { } }
 do
 	-- Triggers
 	
-	function pack.Triggers.Instant( id, action, ... )
-		return action( id, ... )
+	function pack.Triggers.Instant( ... )
+		return invoke( ... )
 	end
 		
 	function pack.Parametric.Triggers.Pipe( a, b )
 		return function( id, ... )
 			local args = table.pack( ... )
-			return b( id, function( id ) 
-				return a( id, table.unpack( args ) )
+			return invoke( id, b, function( id ) 
+				return invoke( id, a, table.unpack( args ) )
 			end )
 		end
 	end
@@ -62,7 +63,7 @@ do
 			local args = table.pack( ... )
 			return thread( function( )
 				wait( s )
-				return action( id, table.unpack( args ) )
+				return invoke( id, action, table.unpack( args ) )
 			end )
 		end
 	end
