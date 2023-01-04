@@ -13,7 +13,7 @@ def NotifyEffect(eid, result=None):
     if result is None:
         result = "Success"
     print(f"CrowdControl: Responding with {result} for effect with ID {eid}")
-    thread.socket.send(json.dumps({"id":eid, "status":result}).encode('utf-8'))
+    thread.socket.send(json.dumps({"id":eid, "status":result}).encode('utf-8')+b'\x00')
 
 def RequestEffect(eid, effect):
     print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
