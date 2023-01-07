@@ -13,7 +13,6 @@ do
 	-- might have issues with triggers that take extra arguments
 	onTrigger = { }
 	function pack.Parametric.Triggers.OnTrigger( trigger, ... )
-
 		if type( trigger ) == "string" then
 			trigger = ModUtil.Path.Get( trigger )
 		end

@@ -7,8 +7,10 @@ pack.Parametric = { Actions = { }, Triggers = { } }
 do
 	-- Triggers
 	
-	function packs.Base.Parametric.Triggers.DisplayTimer( duration )
+	function pack.Parametric.Triggers.DisplayTimer( duration )
 		return function( ... )
+			local duration = duration
+			local args = table.pack( ... )
 			thread( function( )
 				while duration > 1 do
 					ModUtil.Hades.PrintOverhead( duration, 1 )
@@ -16,34 +18,16 @@ do
 					wait( 1 )
 				end
 				ModUtil.Hades.PrintOverhead( duration, duration )
-				wait(duration)
+				wait( duration )
 				ModUtil.Hades.PrintOverhead( " ", 0.05 )
-				cc.InvokeEffect( ... )
+				return cc.InvokeEffect( table.unpack( args ) )
 			end	)
 		end
 	end
 	
 	-- Actions
 	function pack.Actions.Suicide( id )
-		KillHero( { }, { }, { } )
-		return cc.NotifyEffect( id )
-	end
-
-	function packs.Base.Parametric.Actions.DisplayTimer( duration )
-		return function( id )
-			cc.NotifyEffect( id, "Success", duration )
-			thread( function( )
-				while duration > 1 do
-					ModUtil.Hades.PrintOverhead( duration, 1 )
-					duration = duration - 1
-					wait( 1 )
-				end
-				ModUtil.Hades.PrintOverhead( duration, duration )
-				wait(duration)
-				cc.NotifyEffect( id, "Finished" )
-				ModUtil.Hades.PrintOverhead( " ", 0.05 )
-			end	)
-		end
+		return true, KillHero( { }, { }, { } )
 	end
 
 	function pack.Parametric.Actions.PrintStack( ... )
@@ -52,9 +36,7 @@ do
 	
 	-- Effects
 	pack.Effects.HelloWorld = pack.Parametric.Actions.PrintStack( "Hello World!" )
-	pack.Effects.DelayedSuicide = cc.BindEffect( packs.Base.Parametric.Triggers.Delay( 5 ), pack.Actions.Suicide )
-	pack.Effects.TimedSuicide = cc.BindEffect( pack.Parametric.Triggers.DisplayTimer( 5 ), pack.Actions.Suicide )
-	pack.Effects.Display5SecTimer = packs.Base.Parametric.Actions.DisplayTimer( 5 )
+	pack.Effects.TimedSuicide = cc.TimedEffect( 5, pack.Parametric.Triggers.DisplayTimer( 5 ), pack.Actions.Suicide )
 
 end
 

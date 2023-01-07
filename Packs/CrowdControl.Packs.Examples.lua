@@ -9,14 +9,12 @@ do
 
 	-- Actions
 	if StyxScribeREPL then
-		function pack.Actions.Quit( id )
-			StyxScribeREPL.RunPython( "end()" )
-			return cc.NotifyEffect( id )
+		function pack.Actions.Quit( )
+			return true, StyxScribeREPL.RunPython( "end()" )
 		end
 		function pack.Parametric.Actions.RunPython( code )
-			return function( id )
-				StyxScribeREPL.RunPython( code )
-				return cc.NotifyEffect( id )
+			return function( )
+				return true, StyxScribeREPL.RunPython( code )
 			end
 		end
 	end

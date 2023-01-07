@@ -13,6 +13,8 @@ namespace CrowdControl.Games.Packs
 
         public override ushort Port => 58430;
 
+		public override SITimeSpan ResponseTimeout => 20;
+
         public Hades(IPlayer player, Func<CrowdControlBlock, bool> responseHandler, Action<object> statusUpdateHandler) : base(player, responseHandler, statusUpdateHandler) { }
 
         public override Game Game { get; } = new(5, "Hades", "Hades", "PC", ConnectorType.SimpleTCPConnector);
@@ -20,9 +22,7 @@ namespace CrowdControl.Games.Packs
         public override List<Effect> Effects { get; } = new()
         {
             new Effect("Hello World", "Hades.Examples.HelloWorld"),
-			new Effect("Delayed Suicide", "Hades.Examples.DelayedSuicide"),
 			new Effect("Timed Suicide", "Hades.Examples.TimedSuicide"),
-			new Effect("Dispay 5 Second Timer", "Hades.Examples.Display5SecTimer"){Duration = 5},
         };
     }
 }

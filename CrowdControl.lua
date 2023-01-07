@@ -1,11 +1,13 @@
--- Depends on ModUtil, StyxScribe, StyxScribeShared, StyxScribeActive
+-- Depends on ModUtil, StyxScribe, StyxScribeShared
 
 ModUtil.Mod.Register( "CrowdControl" )
 
 local requestTimes = { }
 local idQueues = { }
 local effectMaps = { }
-local shared
+local cancelled = { }
+local timers = { }
+local shared, notifyEffect
 
 -- Helpers
 
@@ -15,13 +17,22 @@ local function handleEffects(effectMap, idQueue)
 end
 
 local function checkEffect( id )
-	--print(id, StyxScribeActive.Time, requestTimes[ id ], StyxScribeActive.Time - requestTimes[ id ])
-	return StyxScribeActive.Time - requestTimes[ id ] < CrowdControl.EffectTimeout
+	return not cancelled[ id ] and _worldTime - requestTimes[ id ] < CrowdControl.EffectTimeout
 end
 
 local function invokeEffect( id, effect, ... )
 	if checkEffect( id ) then
-		return effect( id, ... )
+		if effect then
+			local args = table.pack( effect( id, ... ) )
+			if args.n >= 1 and args[ 1 ] == true then
+				if timers[ id ] then
+					notifyEffect( id, "Finished" )
+				else
+					notifyEffect( id, "Success" )
+				end
+			end
+			return table.unpack( args )
+		end
 	end
 end
 
@@ -61,15 +72,36 @@ local function bindEffect( effect, value )
 	end
 end
 
--- TODO: timed effect helpers
+local function timedEffect( duration, enable, disable )
+	return function( id, ... )
+		local args = table.pack( invokeEffect( id, enable, ... ) )
+		requestTimes[ id ] = _worldTime
+		timers[ id ] = duration
+		notifyEffect( id, "Success", duration )
+		thread( function( )
+			wait( duration )
+			invokeEffect( id, disable, table.unpack( args ) )
+			timers[ id ] = nil
+			requestTimes[ id ] = nil
+		end )
+		return table.unpack( args )
+	end
+end
 
 -- Implementation
 
 local function checkHandledEffects( )
+	for id, duration in rawpairs( timers ) do
+		duration = duration - _worldTime + requestTimes[ id ]
+		timers[ id ] = duration
+		if duration > 0 then
+			notifyEffect( id, "Resumed", duration )
+		end
+	end
 	for i, effectMap in rawipairs( effectMaps ) do
 		local idQueue = idQueues[ effectMap ]
 		if idQueue then
-			for i, id in rawipairs( idQueues ) do
+			for i, id in rawipairs( idQueue ) do
 				if not checkEffect( id ) then
 					idQueue[ i ] = nil
 					effectMap[ id ] = nil
@@ -88,17 +120,17 @@ end
 
 local function routineCheckHandledEffects( )
 	while true do
-		wait(CrowdControl.EffectTimeout/2)
+		waitScreenTime( CrowdControl.RoutineCheckPeriod )
 		checkHandledEffects( )
 	end
 end
 
-local function notifyEffect( id, result )
-	return shared.NotifyEffect( id, result )
+function notifyEffect( ... )
+	return shared.NotifyEffect( ... )
 end
 
-local function requestEffect( id, effect, sentTime )
-	requestTimes[ id ] = sentTime or StyxScribeActive.Time
+local function requestEffect( id, effect )
+	requestTimes[ id ] = _worldTime
 	if ModUtil.Callable( effect ) then
 		return effect( id )
 	end
@@ -123,9 +155,28 @@ local function initShared( )
 	shared.RequestEffect = requestEffect
 end
 
+local function cancelEffect( message )
+	local id = tonumber( message )
+	cancelled[ id ] = true
+	for i, effectMap in rawipairs( effectMaps ) do
+		local idQueue = idQueues[ effectMap ]
+		if idQueue then
+			for i, id in rawipairs( idQueue ) do
+				idQueue[ i ] = nil
+				effectMap[ id ] = nil
+			end
+		else
+			for id in rawpairs( effectMap ) do
+				effectMap[ id ] = nil
+			end
+		end
+	end
+end
+
 -- API
 
-CrowdControl.EffectTimeout = 5
+CrowdControl.EffectTimeout = 20
+CrowdControl.RoutineCheckPeriod = 2
 
 CrowdControl.Shared = nil
 CrowdControl.Effects = { }
@@ -133,20 +184,22 @@ CrowdControl.Effects = { }
 CrowdControl.RequestEffect = requestEffect
 CrowdControl.NotifyEffect = notifyEffect
 
-CrowdControl.InvokeEffects = invokeEffect
+CrowdControl.InvokeEffect = invokeEffect
 CrowdControl.InvokeEffects = invokeEffects
 CrowdControl.HandleEffects = handleEffects
 CrowdControl.CheckEffect = checkEffect
 CrowdControl.BindEffect = bindEffect
+CrowdControl.TimedEffect = timedEffect
 
 -- Internal
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
-	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects,
-		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects
+	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect,
+		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControl )
+StyxScribe.AddHook( cancelEffect, "StyxScribeShared: Cancel: ", CrowdControl )
 
 initShared( )
 

@@ -13,16 +13,18 @@
 		- A function that dynamically delegates to another function to affect the game is a second order effect
 		- etc...
 	* Effects have a responsibility to eventually call NotifyEffect on their id (by default this reports Success)
-	* Any time an effect is invoked, it should be via InvokeEffect in case of timeouts
+	* Simply return true to automatically call NotifyEffect by the surrounding call of InvokeEffect
+	* Any time an effect is invoked, it should be via InvokeEffect in case of timeouts and to automatically notify
 	* An effect can be formed by binding a trigger with an action via BindEffect (see below for triggers and actions)
+	* Timed effects can be formed via TimedEffect by providing a duration, enable function and corresponding disable function
 
 	The following are optional abstractions:
 
 	Actions: (AKA Child Effect Functions)
 	* An action usually performs the actual mechanics of the effect
 	* If an action that has a trigger (parent effect) specifically returns false, the trigger may attempt to retry the action
-	* Only return false if NotifyEffect has not yet been called for that instance of the effect
-	* An action may be the final step for an effect instance, if so it should call NotifyEffect
+	* Only return a boolean if NotifyEffect has not yet been called for that instance of the effect
+	* An action may be the final step for an effect instance, if so it should call NotifyEffect, or if not timed return a boolean
 
 	Triggers: (AKA Parent Effect Functions)
 	* A trigger is a higher order effect that takes an effect id and an action (child effect)
@@ -73,8 +75,7 @@ do
 	function pack.Parametric.Actions.Invoke( func, ... )
 		local args = table.pack( ... )
 		return function( id )
-			func( table.unpack( args ) )
-			return cc.NotifyEffect( id )
+			return true, func( table.unpack( args ) )
 		end
 	end
 	
