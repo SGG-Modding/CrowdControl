@@ -12,26 +12,23 @@
 		- A function that directly affects the game is a first order effect
 		- A function that dynamically delegates to another function to affect the game is a second order effect
 		- etc...
-	* Effects have a responsibility to eventually call NotifyEffect on their id (by default this reports Success)
-	* Simply return true to automatically call NotifyEffect by the surrounding call of InvokeEffect
+	* Effects have a responsibility to eventually call NotifyEffect on their id
+	* Return a boolean to automatically call NotifyEffect by the surrounding call of InvokeEffect (true for success/finished, false for retry/failure)
 	* Any time an effect is invoked, it should be via InvokeEffect in case of timeouts and to automatically notify
 	* An effect can be formed by binding a trigger with an action via BindEffect (see below for triggers and actions)
 	* Timed effects can be formed via TimedEffect by providing a duration, enable function and corresponding disable function
+	* If an effect should fail when it returns false instead of being retried, use RigidEffect
 
 	The following are optional abstractions:
 
 	Actions: (AKA Child Effect Functions)
 	* An action usually performs the actual mechanics of the effect
-	* If an action that has a trigger (parent effect) specifically returns false, the trigger may attempt to retry the action
-	* Only return a boolean if NotifyEffect has not yet been called for that instance of the effect
-	* An action may be the final step for an effect instance, if so it should call NotifyEffect, or if not timed return a boolean
+	* An action may be the final step for an effect instance, if so it should call NotifyEffect or return a boolean
 
 	Triggers: (AKA Parent Effect Functions)
 	* A trigger is a higher order effect that takes an effect id and an action (child effect)
 	* The trigger must eventually invoke the action with the id passed in
-	* Ideally if the action specifically returns false, and it's possible to retry the action, eventually do so
 	* Triggers that handle their actions in batches may benefit from using InvokeEffects
-	* If an action that returns false can't be retried, report "Retry" via NotifyEffect so it can start from the top
 
 	Parametric: (for Parametric.Actions and Parametric.Triggers)
 	* Not directly a trigger or action, until called with some arguments (one step removed to be more general)
@@ -47,25 +44,21 @@ pack.Parametric = { Actions = { }, Triggers = { } }
 do
 	-- Triggers
 	
-	function pack.Triggers.Instant( ... )
-		return invoke( ... )
-	end
-		
-	function pack.Parametric.Triggers.Pipe( a, b )
-		return function( id, ... )
-			local args = table.pack( ... )
-			return invoke( id, b, function( id ) 
-				return invoke( id, a, table.unpack( args ) )
-			end )
+	function pack.Parametric.Triggers.Condition( check )
+		return function( ... )
+			if check( ... ) then
+				return invoke( ... )
+			end
+			return false
 		end
 	end
-		
+
 	function pack.Parametric.Triggers.Delay( s )
-		return function( id, action, ... )
+		return function( ... )
 			local args = table.pack( ... )
 			return thread( function( )
 				wait( s )
-				return invoke( id, action, table.unpack( args ) )
+				return invoke( table.unpack( args ) )
 			end )
 		end
 	end
@@ -74,7 +67,7 @@ do
 
 	function pack.Parametric.Actions.Invoke( func, ... )
 		local args = table.pack( ... )
-		return function( id )
+		return function( )
 			return true, func( table.unpack( args ) )
 		end
 	end

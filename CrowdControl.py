@@ -8,6 +8,8 @@ __all__ = ["Load", "RequestEffect", "NotifyEffect", "Internal"]
 
 Shared = None
 
+TIMEOUT = 15
+
 effects = set()
 timed = set()
 paused = set()
@@ -17,7 +19,7 @@ def NotifyEffect(eid, status=None, timeRemaining=None):
         status = "Success"
     if eid in effects:
         effects.remove(eid)
-            
+    
     message = {"id":eid, "status":status}
     
     if timeRemaining is None:
@@ -45,7 +47,7 @@ def NotifyEffect(eid, status=None, timeRemaining=None):
 
 def RequestEffect(eid, effect, *args):
     print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
-    if not Scribe.LuaActive:
+    if not Scribe.LuaActive and time.time() - Scribe.LastLuaInactiveTime > TIMEOUT:
         return NotifyEffect(eid,"Retry")
     effects.add(eid)
     try:
@@ -89,7 +91,11 @@ class AppSocketThread(threading.Thread):
                         NotifyEffect(eid, "NotReady")
                         continue
                     effect = message["code"]
-                    RequestEffect(eid, effect)
+                    duration = message.get("duration",None)
+                    if duration:
+                        RequestEffect(eid, effect, duration/1000)
+                    else:
+                        RequestEffect(eid, effect)
             except ConnectionResetError:
                 time.sleep(15)
                 continue
@@ -114,13 +120,20 @@ def Load():
         Shared.NotifyEffect = NotifyEffect
 
     def onInactive():
+        for e in tuple(e for e in timed if e not in paused):
+            NotifyEffect(e,"Paused")
+
+    def onInactiveDelayed():
         es = tuple(effects)
         effects.clear()
         for e in es:
             NotifyEffect(e,"Retry")
             Scribe.Send("CrowdControl: Cancel: " + str(e))
+
+    def onInactive():
         for e in tuple(e for e in timed if e not in paused):
             NotifyEffect(e,"Paused")
 
     Scribe.AddHook(initShared, "StyxScribeShared: Reset", __name__)
     Scribe.AddOnLuaInactive(onInactive)
+    Scribe.AddOnLuaInactive(onInactiveDelayed, TIMEOUT)

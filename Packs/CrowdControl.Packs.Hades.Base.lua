@@ -5,7 +5,7 @@ local pack = ModUtil.Mod.Register( "Base", packs )
 pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
 pack.Parametric = { Actions = { }, Triggers = { } }
 
-local onTrigger
+local onTrigger, displayActive
 do
 	-- Triggers
 
@@ -38,6 +38,27 @@ do
 		-- stub
 	end
 	
+	displayActive = false
+	function pack.Triggers.DisplayTimer( id, action, duration, ... )
+		if displayActive then return false end
+		local args = table.pack( ... )
+		displayActive = true
+		thread( function( )
+			while duration > 1 do
+				ModUtil.Hades.PrintOverhead( duration, 1 )
+				duration = duration - 1
+				wait( 1 )
+			end
+			ModUtil.Hades.PrintOverhead( duration, duration )
+			wait( duration )
+			ModUtil.Hades.PrintOverhead( " ", 0.05 )
+			displayActive = false
+			if action then
+				return cc.InvokeEffect( id, action, table.unpack( args ) )
+			end
+		end )
+	end
+
 	-- Actions
 	
 	-- Effects
@@ -49,4 +70,4 @@ end
 
 -- Internal
 
-pack.Internal = ModUtil.UpValues( function( ) return onTrigger end )
+pack.Internal = ModUtil.UpValues( function( ) return onTrigger, displayActive end )

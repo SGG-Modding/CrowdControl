@@ -7,6 +7,8 @@ local idQueues = { }
 local effectMaps = { }
 local cancelled = { }
 local timers = { }
+local rigid = { }
+local ignore = { }
 local shared, notifyEffect
 
 -- Helpers
@@ -17,23 +19,39 @@ local function handleEffects(effectMap, idQueue)
 end
 
 local function checkEffect( id )
-	return not cancelled[ id ] and _worldTime - requestTimes[ id ] < CrowdControl.EffectTimeout
+	return not cancelled[ id ]
 end
 
 local function invokeEffect( id, effect, ... )
-	if checkEffect( id ) then
-		if effect then
-			local args = table.pack( effect( id, ... ) )
-			if args.n >= 1 and args[ 1 ] == true then
-				if timers[ id ] then
-					notifyEffect( id, "Finished" )
-				else
-					notifyEffect( id, "Success" )
-				end
+	if not checkEffect( id ) or not effect then return end
+	local args = table.pack( effect( id, ... ) )
+	if not checkEffect( id ) then return end
+	if args.n >= 1 then
+		local final = true
+		if not ignore[ id ] and args[ 1 ] == true then
+			if timers[ id ] then
+				notifyEffect( id, "Finished" )
+				timers[ id ] = nil
+			else
+				notifyEffect( id, "Success" )
 			end
-			return table.unpack( args )
+		elseif args[ 1 ] == false then
+			if rigid[ id ] then
+				notifyEffect( id, "Failure" )
+				rigid[ id ] = nil
+			else
+				notifyEffect( id, "Retry" )
+			end
+		else
+			final = false
+		end
+		if final then
+			cancelled[ id ] = true
+			requestTimes[ id ] = nil
+			ignore[ id ] = nil
 		end
 	end
+	return table.unpack( args )
 end
 
 --[[
@@ -49,12 +67,11 @@ local function invokeEffects( effectMap, idQueue, ... )
 		for i = 1, n do
 			local id = idQueue[ i ]
 			local effect = effectMap[ id ]
-			if invokeEffect( id, effect, ... ) ~= false then
-				idQueue[ i ] = nil
-				effectMap[ id ] = nil
-			end
+			invokeEffect( id, effect, ... )
+			idQueue[ i ] = nil
+			effectMap[ id ] = nil
 		end
-		CollapseTable( idQueue )
+		OverwriteAndCollapseTable( idQueue )
 	else
 		-- if you don't provide an id queue then we will just mutate the map
 		-- this means invocation order is implementation detail / undefined behaviour
@@ -66,25 +83,42 @@ local function invokeEffects( effectMap, idQueue, ... )
 	end
 end
 
+local function pipeEffect( a, b )
+	return function( id, ... )
+		return invokeEffect( id, b, invokeEffect( id, a, ... ) )
+	end
+end
+
 local function bindEffect( effect, value )
 	return function( id, ... )
 		return invokeEffect( id, effect, value, ... )
 	end
 end
 
-local function timedEffect( duration, enable, disable )
+local function rigidEffect( effect )
 	return function( id, ... )
-		local args = table.pack( invokeEffect( id, enable, ... ) )
+		rigid[ id ] = true
+		return invokeEffect( id, effect, ... )
+	end
+end
+
+local function timedEffect( enable, disable )
+	return function( id, duration, ... )
+		local ig = ignore[ id ]
+		ignore[ id ] = true
+		local args = table.pack( invokeEffect( id, enable, duration, ... ) )
+		if not checkEffect( id ) then return end
+		ignore[ id ] = ig
 		requestTimes[ id ] = _worldTime
 		timers[ id ] = duration
 		notifyEffect( id, "Success", duration )
 		thread( function( )
 			wait( duration )
-			invokeEffect( id, disable, table.unpack( args ) )
+			if disable then
+				invokeEffect( id, disable, table.unpack( args ) )
+			end
 			timers[ id ] = nil
-			requestTimes[ id ] = nil
 		end )
-		return table.unpack( args )
 	end
 end
 
@@ -107,7 +141,7 @@ local function checkHandledEffects( )
 					effectMap[ id ] = nil
 				end
 			end
-			CollapseTable( idQueue )
+			OverwriteAndCollapseTable( idQueue )
 		else
 			for id in rawpairs( effectMap ) do
 				if not checkEffect( id ) then
@@ -125,11 +159,12 @@ local function routineCheckHandledEffects( )
 	end
 end
 
-function notifyEffect( ... )
-	return shared.NotifyEffect( ... )
+function notifyEffect( id, ... )
+	if not checkEffect( id ) then return end
+	return shared.NotifyEffect( id, ... )
 end
 
-local function requestEffect( id, effect )
+local function requestEffect( id, effect, ... )
 	requestTimes[ id ] = _worldTime
 	if ModUtil.Callable( effect ) then
 		return effect( id )
@@ -141,7 +176,7 @@ local function requestEffect( id, effect )
 	if not ModUtil.Callable( func ) then
 		return notifyEffect( id, "Unavailable" )
 	end
-	return invokeEffect( id, func )
+	return invokeEffect( id, func, ... )
 end
 
 local function initShared( )
@@ -190,16 +225,18 @@ CrowdControl.HandleEffects = handleEffects
 CrowdControl.CheckEffect = checkEffect
 CrowdControl.BindEffect = bindEffect
 CrowdControl.TimedEffect = timedEffect
+CrowdControl.PipeEffect = pipeEffect
+CrowdControl.RigidEffect = rigidEffect
 
 -- Internal
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
 	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect,
-		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled
+		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControl )
-StyxScribe.AddHook( cancelEffect, "StyxScribeShared: Cancel: ", CrowdControl )
+StyxScribe.AddEarlyHook( cancelEffect, "StyxScribeShared: Cancel: ", CrowdControl )
 
 initShared( )
 
