@@ -16,7 +16,7 @@
 	* Return a boolean to automatically call NotifyEffect by the surrounding call of InvokeEffect (true for success/finished, false for retry/failure)
 	* Any time an effect is invoked, it should be via InvokeEffect in case of timeouts and to automatically notify
 	* An effect can be formed by binding a trigger with an action via BindEffect (see below for triggers and actions)
-	* Timed effects can be formed via TimedEffect by providing a duration, enable function and corresponding disable function
+	* Timed effects can be formed via TimedEffect by providing an enable function and corresponding disable function, enable will be given the duration
 	* If an effect should fail when it returns false instead of being retried, use RigidEffect
 
 	The following are optional abstractions:
