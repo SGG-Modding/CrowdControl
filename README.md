@@ -9,8 +9,8 @@ For clarification, `Mod Importer`'s content should be extracted to the `Content`
 
 You need at least [`python 3.8`](https://www.python.org/downloads/) and you need to run `Mod Importer`'s `modimporter<.ext>` (where `<.ext>` depends on which version you got) first, and then run the appropriate `Subsume<game>.py` such as `SubsumeHades.py` for Hades.
     
-For modders, use the Crowd Control SDK to test effects by loading the a `.cs` file in `Content/CrowdControlContent`.          
+For modders, use the [Crowd Control SDK](https://forum.warp.world/t/how-to-setup-and-use-the-crowd-control-sdk/5121) to test effects by loading the a `.cs` file in `Content/CrowdControlContent`.          
 You can fork this repo and make pull requests but try to only make changes to the `Packs` folder.   
 
-For streamers, use the Crowd Control Twitch extension and the Crowd Control app to load a `.ccpack` file in `Content/CrowdControlContent`.    
-You may also need the Crowd Control SDK to turn a `.cs` file into a `.ccpack`, as that assigns points to the effects.
+For streamers, use the [Crowd Control Twitch extension and the Crowd Control app](https://crowdcontrol.live/setup) to load a `.ccpack` file in `Content/CrowdControlContent`.
+You may also need the [Crowd Control SDK](https://forum.warp.world/t/how-to-setup-and-use-the-crowd-control-sdk/5121) to turn a `.cs` file into a `.ccpack`, as that assigns points to the effects.
