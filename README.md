@@ -1,6 +1,6 @@
 # Crowd Control for SGG Games
 
-You need the latest `Mod Importer`, `Mod Utility`, and `StyxScribe` (all from GitHub as Nexus is a bit behind always)    
+You need the latest [`Mod Importer`](https://github.com/SGG-Modding/ModImporter), [`Mod Utility`](https://github.com/SGG-Modding/ModUtil), and `StyxScribe` (all from GitHub source files as releases and Nexus posts are a bit behind always)
    
 Either way, you need at least `python 3.8` and you need to run `Mod Importer` first, and then run the appropriate `Subsume<game>.py` such as `SubsumeHades.py` for Hades.
     
