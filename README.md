@@ -1,5 +1,6 @@
 # Crowd Control for SGG Games
 
+Should work on Hades and Pyre and hopefully Hades 2 after some minor alterations
 This will NOT work on Windows Store / Game Pass games.
 
 You need the latest [`Mod Importer`](https://github.com/SGG-Modding/ModImporter), [`Mod Utility`](https://github.com/SGG-Modding/ModUtil), and [`StyxScribe`](https://github.com/SGG-Modding/StyxScribe).     
