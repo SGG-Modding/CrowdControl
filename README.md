@@ -3,7 +3,7 @@
 This will NOT work on Windows Store / Game Pass games.
 
 You need the latest [`Mod Importer`](https://github.com/SGG-Modding/ModImporter), [`Mod Utility`](https://github.com/SGG-Modding/ModUtil), and [`StyxScribe`](https://github.com/SGG-Modding/StyxScribe).     
-(get Mod Importer from GitHub releases, and the rest by cloning the respective repositories)
+(get `Mod Importer` from GitHub releases, and the rest by cloning the respective repositories)
 
 For clarification, `Mod Importer`'s content should be extracted to the `Content` folder, `Mod Utility`'s content should be in a folder called `ModUtil` with a `modfile.txt` directly inside, then put that folder in `Content/Mods`, `StyxScribe`'s content should be put directly into your game's top level directory, so for Hades that's just the folder `Hades.game.app` on macOS and `Hades` on the rest.
 
