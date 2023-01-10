@@ -24,7 +24,12 @@ namespace CrowdControl.Games.Packs
             new Effect("Hello World", "Hades.MyGoodShades.HelloWorld"),
             new Effect("No Escape", "Hades.MyGoodShades.TimedSuicide"){ Duration = 20 },
 			new Effect("300 Temporary Money", "Hades.MyGoodShades.TempMoney"){ Duration = 10 },
+           
+            
+            // Cornucopia pack
             new Effect("Extra Aid", "Hades.MyGoodShades.BuildSuperMeter"),
+            new Effect("Healing Aid", "Hades.Cornucopia.DropHeal"),
+            
         };
     }
 }

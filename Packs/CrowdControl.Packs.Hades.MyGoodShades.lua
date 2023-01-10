@@ -22,10 +22,10 @@ do
 	-- 	return CanOpenCodex() and not CurrentRun.Hero.IsDead
 	-- end
 
-	function pack.Triggers.NextEncounter()
-		-- TO FINISH
-		return false
-	end
+	-- function pack.Triggers.NextEncounter()
+	-- 	-- TO FINISH
+	-- 	return false
+	-- end
 
 	-- Actions
 	function pack.Parametric.Actions.PrintStack( ... )
@@ -60,8 +60,7 @@ do
 	-- Effects
 	pack.Effects.HelloWorld = pack.Parametric.Actions.PrintStack( "Hello World!" )
 	pack.Effects.TimedSuicide = cc.TimedEffect( cc.BindEffect( packs.Hades.Base.Triggers.DisplayTimer, pack.Actions.Suicide ) )
-	pack.Effects.BuildSuperMeter = cc.BindEffect( pack.Triggers.IsRunActive, pack.Actions.BuildSuperMeter )
-	-- pack.Effects.BuildSuperMeter = pack.Actions.BuildSuperMeter 
+	pack.Effects.BuildSuperMeter =  pack.Actions.BuildSuperMeter 
 	pack.Effects.TempMoney = cc.RigidEffect( cc.BindEffect( packs.Base.Parametric.Triggers.Condition( function( ) return not CurrentRun.Hero.IsDead end ),
 		 cc.TimedEffect( pack.Parametric.Actions.AddMoney( 300 ), pack.Parametric.Actions.AddMoney( -300 ) ) ) )
 
