@@ -46,7 +46,7 @@ do
 	-- Triggers
 	
 	function getCheck( check, ... )
-		if type( check ) = "string" then
+		if type( check ) == "string" then
 			check = ModUtil.Path.Get( check )
 		end
 		if ModUtil.Callable( check ) then
