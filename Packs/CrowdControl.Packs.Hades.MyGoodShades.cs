@@ -31,6 +31,7 @@ namespace CrowdControl.Games.Packs
             new Effect("Healing Aid", "Hades.Cornucopia.DropHeal"),
             new Effect("Money Aid", "Hades.Cornucopia.DropMoney"),
             
+
         };
     }
 }

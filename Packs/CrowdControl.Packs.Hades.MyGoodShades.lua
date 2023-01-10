@@ -22,12 +22,14 @@ do
 	-- 	return CanOpenCodex() and not CurrentRun.Hero.IsDead
 	-- end
 
+
 	-- function pack.Triggers.NextEncounter()
 	-- 	-- TO FINISH
 	-- 	return false
 	-- end
 
 	-- Actions
+
 	function pack.Actions.BuildSuperMeter()
 		if IsSuperValid() then 
 			BuildSuperMeter(CurrentRun, 50)
