@@ -1,7 +1,9 @@
-# Available Effects for MyGoodShades
+# Available Effects
 
 ## Examples (MagicGonads Examples)
+- Hello World (Debug print)
 - Timed Suicide (Kills Zagreus after a short amount of time)
+- Temp Money (Temporarily provides 300 money. Amount is deducted after 10 seconds)
 
 ## MyGoodShades General
 - Hello World (Zagreus says hello)
