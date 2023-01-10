@@ -6,23 +6,23 @@ pack.Parametric = { Actions = { }, Triggers = { } }
 
 do
 	-- Triggers
-	function packs.Triggers.IsRunActive()
+	function pack.Triggers.IsRunActive()
 		return not CurrentRun.Hero.IsDead
 	end
 	
-	function packs.Triggers.DuringEncounter()
-		if CurrentRun.Hero.IsDead then
-			return false 
-		end
-		local currentEncounter = CurrentRun.CurrentRoom.Encounter
-		return currentEncounter.EncounterType ~= "NonCombat" and currentEncounter.InProgress = true
-	end
+	-- function pack.Triggers.DuringEncounter()
+	-- 	if CurrentRun.Hero.IsDead then
+	-- 		return false 
+	-- 	end
+	-- 	local currentEncounter = CurrentRun.CurrentRoom.Encounter
+	-- 	return currentEncounter.EncounterType ~= "NonCombat" and currentEncounter.InProgress = true
+	-- end
 
-	function packs.Triggers.DuringNonCombat()
-		return CanOpenCodex() and not CurrentRun.Hero.IsDead
-	end
+	-- function pack.Triggers.DuringNonCombat()
+	-- 	return CanOpenCodex() and not CurrentRun.Hero.IsDead
+	-- end
 
-	function packs.Triggers.NextEncounter()
+	function pack.Triggers.NextEncounter()
 		-- TO FINISH
 		return false
 	end
@@ -60,7 +60,8 @@ do
 	-- Effects
 	pack.Effects.HelloWorld = pack.Parametric.Actions.PrintStack( "Hello World!" )
 	pack.Effects.TimedSuicide = cc.TimedEffect( cc.BindEffect( packs.Hades.Base.Triggers.DisplayTimer, pack.Actions.Suicide ) )
-	pack.Effects.BuildSuperMeter = cc.BindEffect( packs.Triggers.IsRunActive, pack.Actions.BuildSuperMeter )
+	pack.Effects.BuildSuperMeter = cc.BindEffect( pack.Triggers.IsRunActive, pack.Actions.BuildSuperMeter )
+	-- pack.Effects.BuildSuperMeter = pack.Actions.BuildSuperMeter 
 	pack.Effects.TempMoney = cc.RigidEffect( cc.BindEffect( packs.Base.Parametric.Triggers.Condition( function( ) return not CurrentRun.Hero.IsDead end ),
 		 cc.TimedEffect( pack.Parametric.Actions.AddMoney( 300 ), pack.Parametric.Actions.AddMoney( -300 ) ) ) )
 
