@@ -1,6 +1,9 @@
 Load Priority 100
 Import "CrowdControl.Packs.Examples.lua"
 Import "CrowdControl.Packs.Hades.Examples.lua"
+Import "CrowdControl.Packs.Hades.MyGoodShades.lua"
+Import "CrowdControl.Packs.Hades.Cornucopia.lua"
+
 
 Load Priority 20
 Import "CrowdControl.Packs.Base.lua"
@@ -9,3 +12,5 @@ Import "CrowdControl.Packs.Hades.Base.lua"
 Load Priority 100
 To "CrowdControlContent/CrowdControl.Packs.Hades.Examples.cs"
 Replace "CrowdControl.Packs.Hades.Examples.cs"
+To "CrowdControlContent/CrowdControl.Packs.Hades.MyGoodShades.cs"
+Replace "CrowdControl.Packs.Hades.MyGoodShades.cs"
