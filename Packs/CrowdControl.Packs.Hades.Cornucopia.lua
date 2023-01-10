@@ -28,7 +28,7 @@ do
 	-- Builds up the call gauge
 
 	-- Spawn Item Consumable action
-	function pack.Actions.SpawnMoney( )
+	function pack.Actions.SpawnMoney()
 		local dropItemName = "MinorMoneyDrop"
 		GiveRandomConsumables({
 			Delay = 0.5,

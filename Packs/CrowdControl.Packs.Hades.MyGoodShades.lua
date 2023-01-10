@@ -29,6 +29,21 @@ do
 	-- end
 
 	-- Actions
+	function pack.Actions.SayHello()
+		local HelloVoiceLine = {
+			{
+				RequiredFalseFlags = { "InFlashback" },
+				PreLineWait = 1.0,
+				BreakIfPlayed = true,
+
+				-- Just thought I'd say hello!
+				{ Cue = "/VO/ZagreusHome_2081"},
+			}
+		},
+		-- ModUtil.Hades.PrintStack("Hello World!")
+		thread( PlayVoiceLines, HelloVoiceLine, true)
+		return true
+	end
 
 	function pack.Actions.BuildSuperMeter()
 		if IsSuperValid() then 
@@ -40,6 +55,7 @@ do
 
 	
 	-- Effects
+	pack.Effects.HelloWorld = pack.Actions.SayHello
 	pack.Effects.BuildSuperMeter =  pack.Actions.BuildSuperMeter 
 
 end
@@ -47,3 +63,13 @@ end
 
 -- put our effects into the centralised Effects table, under the "Hades.MyGoodShades" path
 ModUtil.Path.Set( "Hades.MyGoodShades", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
+
+-- For testing purposes
+-- ModUtil.Path.Wrap( "BeginOpeningCodex", 
+-- 	function(baseFunc)		
+-- 		if not CanOpenCodex() then
+-- 			pack.Actions.SayHello()
+-- 		end
+-- 		baseFunc()
+-- 	end
+-- )
