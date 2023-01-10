@@ -5,11 +5,15 @@ pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
 pack.Parametric = { Actions = { }, Triggers = { } }
 
 do
+	-- =====================================================
 	-- Triggers
+	-- =====================================================
 	function pack.Triggers.IsRunActive()
 		return not CurrentRun.Hero.IsDead
 	end
 	
+	-- Experimental Triggers 
+
 	-- function pack.Triggers.DuringEncounter()
 	-- 	if CurrentRun.Hero.IsDead then
 	-- 		return false 
@@ -28,7 +32,11 @@ do
 	-- 	return false
 	-- end
 
+	-- =====================================================
 	-- Actions
+	-- =====================================================
+
+	-- Hello World! Zagreus says hello!
 	function pack.Actions.SayHello()
 		local HelloVoiceLine = {
 			{
@@ -45,6 +53,7 @@ do
 		return true
 	end
 
+	-- Calling Aid. Add 50 to the call gauge
 	function pack.Actions.BuildSuperMeter()
 		if IsSuperValid() then 
 			BuildSuperMeter(CurrentRun, 50)
@@ -53,8 +62,9 @@ do
 		return false
 	end	
 
-	
+	-- =====================================================
 	-- Effects
+	-- =====================================================
 	pack.Effects.HelloWorld = pack.Actions.SayHello
 	pack.Effects.BuildSuperMeter =  pack.Actions.BuildSuperMeter 
 

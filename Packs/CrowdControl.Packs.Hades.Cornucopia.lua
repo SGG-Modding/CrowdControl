@@ -5,29 +5,18 @@ pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
 pack.Parametric = { Actions = { }, Triggers = { } }
 
 do
+	-- =====================================================
 	-- Triggers
+	-- =====================================================
 	function pack.Triggers.IsRunActive()
 		return not CurrentRun.Hero.IsDead
 	end
-	
-	-- function pack.Triggers.DuringEncounter()
-	-- 	if CurrentRun.Hero.IsDead then
-	-- 		return false 
-	-- 	end
-	-- 	local currentEncounter = CurrentRun.CurrentRoom.Encounter
-	-- 	return currentEncounter.EncounterType ~= "NonCombat" and currentEncounter.InProgress = true
-	-- end
-
-	-- function pack.Triggers.DuringNonCombat()
-	-- 	return CanOpenCodex() and not CurrentRun.Hero.IsDead
-	-- end
 
 	-- =====================================================
 	-- Actions
 	-- =====================================================
-	-- Builds up the call gauge
 
-	-- Spawn Item Consumable action
+	-- Spawn Item Consumable Actopm
 	function pack.Actions.SpawnMoney()
 		local dropItemName = "MinorMoneyDrop"
 		GiveRandomConsumables({
@@ -49,8 +38,10 @@ do
 		DropHealth( "HealDropMinor", CurrentRun.Hero.ObjectId )
 		return true
 	end
-	
+
+	-- =====================================================
 	-- Effects
+	-- =====================================================
 	pack.Effects.DropHeal = pack.Actions.SpawnHealDrop
 	pack.Effects.DropMoney = pack.Actions.SpawnMoney
 
