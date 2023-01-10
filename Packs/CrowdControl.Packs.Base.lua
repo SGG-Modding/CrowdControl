@@ -105,6 +105,8 @@ end
 
 -- Internal
 
+pack.Internal = ModUtil.UpValues( function( ) return getCheck end )
+
 -- If you have internal components (local variables and functions: i.e. local1, local2, local3 etc.)
 -- You can add a global interface for them with this snippet:
 

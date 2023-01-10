@@ -239,7 +239,7 @@ CrowdControl.SoftEffect = softEffect
 -- Internal
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
-	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect,
+	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect, pipeEffect, rigidEffect, softEffect,
 		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers
 end )
 
