@@ -27,8 +27,9 @@ namespace CrowdControl.Games.Packs
            
             
             // Cornucopia pack
-            new Effect("Extra Aid", "Hades.MyGoodShades.BuildSuperMeter"),
+            new Effect("Calling Aid", "Hades.MyGoodShades.BuildSuperMeter"),
             new Effect("Healing Aid", "Hades.Cornucopia.DropHeal"),
+            new Effect("Money Aid", "Hades.Cornucopia.DropMoney"),
             
         };
     }

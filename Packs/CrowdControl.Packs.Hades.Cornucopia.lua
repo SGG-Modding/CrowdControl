@@ -26,17 +26,10 @@ do
 	-- Actions
 	-- =====================================================
 	-- Builds up the call gauge
-	function pack.Actions.BuildSuperMeter()
-		if IsSuperValid() then 
-			BuildSuperMeter(CurrentRun, 50)
-			return true
-		end
-		return false
-	end	
 
 	-- Spawn Item Consumable action
-	function pack.Actions.SpawnItem( dropItemName )
-		local dropItemName = "RoomRewardHealDrop"
+	function pack.Actions.SpawnMoney( )
+		local dropItemName = "MinorMoneyDrop"
 		GiveRandomConsumables({
 			Delay = 0.5,
 			NotRequiredPickup = true,
@@ -58,8 +51,8 @@ do
 	end
 	
 	-- Effects
-	pack.Effects.BuildSuperMeter = pack.Actions.BuildSuperMeter 
 	pack.Effects.DropHeal = pack.Actions.SpawnHealDrop
+	pack.Effects.DropMoney = pack.Actions.SpawnMoney
 
 end
 
