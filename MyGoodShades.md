@@ -1,4 +1,4 @@
-# Available Effect for MyGoodShades
+# Available Effects for MyGoodShades
 
 ## Examples (MagicGonads Examples)
 - Timed Suicide (Kills Zagreus after a short amount of time)
