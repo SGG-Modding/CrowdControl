@@ -21,9 +21,9 @@ namespace CrowdControl.Games.Packs
 
         public override List<Effect> Effects { get; } = new()
         {
-            new Effect("Hello World", "Hades.MyGoodShades.HelloWorld"),
-            new Effect("No Escape", "Hades.MyGoodShades.TimedSuicide"){ Duration = 20 },
-			new Effect("300 Temporary Money", "Hades.MyGoodShades.TempMoney"){ Duration = 10 },
+            new Effect("Hello World", "Hades.Examples.HelloWorld"),
+            new Effect("No Escape", "Hades.Examples.TimedSuicide"){ Duration = 20 },
+			new Effect("300 Temporary Money", "Hades.Examples.TempMoney"){ Duration = 10 },
            
             
             // Cornucopia pack

@@ -22,7 +22,10 @@ do
 	-- 	return CanOpenCodex() and not CurrentRun.Hero.IsDead
 	-- end
 
+	-- =====================================================
 	-- Actions
+	-- =====================================================
+	-- Builds up the call gauge
 	function pack.Actions.BuildSuperMeter()
 		if IsSuperValid() then 
 			BuildSuperMeter(CurrentRun, 50)
@@ -31,6 +34,7 @@ do
 		return false
 	end	
 
+	-- Spawn Item Consumable action
 	function pack.Actions.SpawnItem( dropItemName )
 		local dropItemName = "RoomRewardHealDrop"
 		GiveRandomConsumables({
@@ -47,13 +51,11 @@ do
 		return true
 	end
 
+	-- Spawns a small heal drop (heals for 10)
 	function pack.Actions.SpawnHealDrop()
 		DropHealth( "HealDropMinor", CurrentRun.Hero.ObjectId )
 		return true
 	end
-
-
-
 	
 	-- Effects
 	pack.Effects.BuildSuperMeter = pack.Actions.BuildSuperMeter 
@@ -61,5 +63,5 @@ do
 
 end
 
--- put our effects into the centralised Effects table, under the "Hades.Examples" path
+-- put our effects into the centralised Effects table, under the "Hades.Cornucopia" path
 ModUtil.Path.Set( "Hades.Cornucopia", ModUtil.Table.Copy( pack.Effects ), cc.Effects )
