@@ -102,6 +102,13 @@ local function rigidEffect( effect )
 	end
 end
 
+local function softEffect( effect )
+	return function( id, ... )
+		rigid[ id ] = false
+		return invokeEffect( id, effect, ... )
+	end
+end
+
 local function timedEffect( enable, disable )
 	return function( id, duration, ... )
 		local ig = ignore[ id ]
@@ -227,6 +234,7 @@ CrowdControl.BindEffect = bindEffect
 CrowdControl.TimedEffect = timedEffect
 CrowdControl.PipeEffect = pipeEffect
 CrowdControl.RigidEffect = rigidEffect
+CrowdControl.SoftEffect = softEffect
 
 -- Internal
 

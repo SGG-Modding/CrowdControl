@@ -17,7 +17,7 @@
 	* Any time an effect is invoked, it should be via InvokeEffect in case of timeouts and to automatically notify
 	* An effect can be formed by binding a trigger with an action via BindEffect (see below for triggers and actions)
 	* Timed effects can be formed via TimedEffect by providing an enable function and corresponding disable function, enable will be given the duration
-	* If an effect should fail when it returns false instead of being retried, use RigidEffect
+	* If an effect should fail when it returns false instead of being retried, use RigidEffect, to reverse that use SoftEffect
 
 	The following are optional abstractions:
 
@@ -41,12 +41,32 @@ local pack = ModUtil.Mod.Register( "Base", packs )
 pack.Effects = { }; pack.Actions = { }; pack.Triggers = { }
 pack.Parametric = { Actions = { }, Triggers = { } }
 
+local getCheck
 do
 	-- Triggers
 	
+	function getCheck( check, ... )
+		if type( check ) = "string" then
+			check = ModUtil.Path.Get( check )
+		end
+		if ModUtil.Callable( check ) then
+			check = check( ... )
+		end
+		return check
+	end
+	
 	function pack.Parametric.Triggers.Condition( check )
 		return function( ... )
-			if check( ... ) then
+			if getCheck( check, ... ) then
+				return invoke( ... )
+			end
+			return false
+		end
+	end
+	
+	function pack.Parametric.Triggers.AntiCondition( check )
+		return function( ... )
+			if not getCheck( check, ... ) then
 				return invoke( ... )
 			end
 			return false
