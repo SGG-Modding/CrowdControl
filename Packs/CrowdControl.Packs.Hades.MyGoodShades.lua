@@ -40,21 +40,56 @@ do
 	-- Actions
 	-- =====================================================
 
-	-- Hello World! Zagreus says hello!
-	function pack.Actions.SayHello()
-		local HelloVoiceLine = {
+	-- Hope you enjoyed the show, my good Shade!
+	function pack.Actions.KillHero( id )
+
+		local HelloVoiceLines = {
 			{
+				-- PlayOnceFromTableThisRun = true,
 				RequiredFalseFlags = { "InFlashback" },
 				PreLineWait = 1.0,
 				BreakIfPlayed = true,
 
+				-- Hope you enjoyed the show, my good Shade!
+				{ Cue = "/VO/ZagreusField_3345"},
+			},
+		}
+	
+		local playedSomething = PlayVoiceLines(HelloVoiceLines, false)
+		return true, KillHero( { }, { }, { } )
+	end
+
+
+	-- Hello World! Zagreus says hello!
+	function pack.Actions.SayHello()
+		local HelloVoiceLines = {
+			{
+				-- PlayOnceFromTableThisRun = true,
+				RequiredFalseFlags = { "InFlashback" },
+				PreLineWait = 1.0,
+				BreakIfPlayed = true,
+				RandomRemaining = true,
+				-- SuccessiveChanceToPlay = 0.33,
+
+				-- Greetings everyone! Just visiting...
+				{ Cue = "/VO/ZagreusHome_2077"}, 
+
+				-- Hello, I'll only be a moment!
+				{ Cue = "/VO/ZagreusHome_2079"},
+
 				-- Just thought I'd say hello!
 				{ Cue = "/VO/ZagreusHome_2081"},
-			}
-		},
+
+				-- That was for you, good Shade!
+				{ Cue = "/VO/ZagreusField_3344"},
+				
+				
+			},
+		}
 		-- ModUtil.Hades.PrintStack("Hello World!")
-		thread( PlayVoiceLines, HelloVoiceLine, true)
-		return true
+		-- thread( PlayVoiceLines, HelloVoiceLines, false)
+		local playedSomething = PlayVoiceLines(HelloVoiceLines, false)
+		return playedSomething
 	end
 
 	-- Calling Aid. Add 50 to the call gauge
