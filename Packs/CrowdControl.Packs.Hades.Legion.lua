@@ -68,6 +68,13 @@ do
 		return pack.Actions.SpawnEnemy(enemy)
 	end
 
+	function pack.Actions.SpawnSatyr()
+		local enemy = "SatyrRanged"
+		-- ModUtil.Hades.PrintStack("Trying to spawn enemy : "..enemy)
+		return pack.Actions.SpawnEnemy(enemy)
+	end
+
+
 
 	-- =====================================================
 	-- Effects
@@ -77,6 +84,7 @@ do
 	pack.Effects.SpawnVoidstone = pack.Actions.SpawnVoidstone
 	pack.Effects.SpawnPest = pack.Actions.SpawnPest
 	pack.Effects.SpawnSnakestone = pack.Actions.SpawnSnakestone
+	pack.Effects.SpawnSatyr = pack.Actions.SpawnSatyr
 
 end
 
@@ -85,12 +93,12 @@ ModUtil.Path.Set( "Hades.Legion", ModUtil.Table.Copy( pack.Effects ), cc.Effects
 
 
 -- For testing purposes
-ModUtil.Path.Wrap( "BeginOpeningCodex", 
-	function(baseFunc)		
-		if not CanOpenCodex() then
-			ModUtil.Hades.PrintStack("Testing Codex function")
-			pack.Actions.SpawnFlameWheel()
-		end
-		baseFunc()
-	end
-)
+-- ModUtil.Path.Wrap( "BeginOpeningCodex", 
+-- 	function(baseFunc)		
+-- 		if not CanOpenCodex() then
+-- 			ModUtil.Hades.PrintStack("Testing Codex function")
+-- 			pack.Actions.SpawnFlameWheel()
+-- 		end
+-- 		baseFunc()
+-- 	end
+-- )

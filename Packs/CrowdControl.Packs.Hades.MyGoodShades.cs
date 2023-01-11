@@ -34,8 +34,11 @@ namespace CrowdControl.Games.Packs
 
             // Legion pack
             new Effect("Numbskulls", "Hades.Legion.SpawnNumbskulls"),
-            new Effect("Flaming Wheels", "Hades.Legion.SpawnFlameWheel"),
-            
+            new Effect("Flamewheels", "Hades.Legion.SpawnFlameWheel"),
+            new Effect("Pests", "Hades.Legion.SpawnPest" ),
+            new Effect("Voidstone", "Hades.Legion.SpawnVoidstone" ),
+            new Effect("Snakestone", "Hades.Legion.SpawnSnakestone" ),
+            new Effect("Satyr", "Hades.Legion.SpawnSatyr" ),
 
         };
     }
