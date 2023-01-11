@@ -8,9 +8,6 @@ do
 	-- =====================================================
 	-- Triggers
 	-- =====================================================
-	function pack.Triggers.IsRunActive()
-		return not CurrentRun.Hero.IsDead
-	end
 
 	-- =====================================================
 	-- Actions
@@ -43,7 +40,7 @@ do
 	-- Effects
 	-- =====================================================
 	pack.Effects.DropHeal = pack.Actions.SpawnHealDrop
-	pack.Effects.DropMoney = pack.Actions.SpawnMoney
+	pack.Effects.DropMoney = cc.RigidEffect( cc.BindEffect( packs.Hades.MyGoodShades.Triggers.IfRunActive, pack.Actions.SpawnMoney ) )
 
 end
 

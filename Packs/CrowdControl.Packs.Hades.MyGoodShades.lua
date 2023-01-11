@@ -8,9 +8,13 @@ do
 	-- =====================================================
 	-- Triggers
 	-- =====================================================
-	function pack.Triggers.IsRunActive()
-		return not CurrentRun.Hero.IsDead
+	function pack.Triggers.IfRunActive( id, action, ... )
+		if not CurrentRun.Hero.IsDead then
+			cc.InvokeEffect( id, action, ... )
+		end
+		return false
 	end
+
 	
 	-- Experimental Triggers 
 
@@ -66,7 +70,7 @@ do
 	-- Effects
 	-- =====================================================
 	pack.Effects.HelloWorld = pack.Actions.SayHello
-	pack.Effects.BuildSuperMeter =  pack.Actions.BuildSuperMeter 
+	pack.Effects.BuildSuperMeter = cc.RigidEffect( cc.BindEffect( pack.Triggers.IfRunActive, pack.Actions.BuildSuperMeter ) )
 
 end
 
