@@ -12,3 +12,12 @@
 - Calling Aid (Builds the call meter by an amount)
 - Healing Aid (Spawns a 10HP heal drop)
 - Money Aid (Spawns 30 obols)
+
+## Legion Pack 
+
+- Spawns
+  - Numbskull (x5, armoured)
+  - Voidstone 
+  - Pests (x5)
+  - Snakestone
+  - Satyr
