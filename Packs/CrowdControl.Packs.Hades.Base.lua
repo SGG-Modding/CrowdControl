@@ -9,6 +9,13 @@ local onTrigger, displayActive
 do
 	-- Triggers
 
+	function pack.Triggers.IfCanMove( id, action, ... )
+		if IsInputAllowed{ } then
+			return cc.InvokeEffect( id, action, ... )
+		end
+		return false
+	end
+
 	-- use any of the base game's triggers as effect triggers
 	-- might have issues with triggers that take extra arguments
 	onTrigger = { }

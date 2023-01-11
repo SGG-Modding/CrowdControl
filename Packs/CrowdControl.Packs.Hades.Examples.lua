@@ -8,7 +8,7 @@ do
 	-- Triggers
 	
 	-- Actions
-	function pack.Actions.Suicide( id )
+	function pack.Actions.KillHero( id )
 		return true, KillHero( { }, { }, { } )
 	end
 
@@ -29,8 +29,8 @@ do
 	
 	-- Effects
 	pack.Effects.HelloWorld = pack.Parametric.Actions.PrintStack( "Hello World!" )
-	pack.Effects.TimedSuicide = cc.TimedEffect( cc.BindEffect( packs.Hades.Base.Triggers.DisplayTimer, pack.Actions.Suicide ) )
-	pack.Effects.TempMoney = cc.RigidEffect( cc.BindEffect( packs.Base.Parametric.Triggers.Condition( function( ) return not CurrentRun.Hero.IsDead end ),
+	pack.Effects.TimedKillHero = cc.BindEffect( packs.Hades.Base.Triggers.IfCanMove, pack.Actions.KillHero )
+	pack.Effects.TempMoney = cc.RigidEffect( cc.BindEffect( packs.Base.Parametric.Triggers.AntiCondition( "CurrentRun.Hero.IsDead" ),
 		 cc.TimedEffect( pack.Parametric.Actions.AddMoney( 300 ), pack.Parametric.Actions.AddMoney( -300 ) ) ) )
 
 end
