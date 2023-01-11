@@ -15,6 +15,16 @@ do
 		return false
 	end
 
+	-- function pack.Triggers.DuringEncounter(id, action, ...)
+	-- 	if CurrentRun.Hero.IsDead then
+	-- 		return false 
+	-- 	end
+	-- 	local currentEncounter = CurrentRun.CurrentRoom.Encounter
+	-- 	if currentEncounter.EncounterType ~= "NonCombat" and currentEncounter.InProgress = true then
+	-- 		cc.InvokeEffect( id, action, ... )
+	-- 	end
+	-- end
+
 	
 	-- Experimental Triggers 
 
