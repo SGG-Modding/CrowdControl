@@ -3,6 +3,7 @@ Import "CrowdControl.Packs.Examples.lua"
 Import "CrowdControl.Packs.Hades.Examples.lua"
 Import "CrowdControl.Packs.Hades.MyGoodShades.lua"
 Import "CrowdControl.Packs.Hades.Cornucopia.lua"
+Import "CrowdControl.Packs.Hades.Legion.lua"
 
 
 Load Priority 20

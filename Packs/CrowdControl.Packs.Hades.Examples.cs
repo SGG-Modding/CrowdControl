@@ -22,7 +22,7 @@ namespace CrowdControl.Games.Packs
         public override List<Effect> Effects { get; } = new()
         {
             new Effect("Hello World", "Hades.Examples.HelloWorld"),
-            new Effect("Timed Suicide", "Hades.Examples.TimedSuicide"){ Duration = 20 },
+            new Effect("Timed Kill Hero", "Hades.Examples.TimedKillHero"){ Duration = 20 },
 			new Effect("300 Temporary Money", "Hades.Examples.TempMoney"){ Duration = 10 },
         };
     }

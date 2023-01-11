@@ -40,32 +40,9 @@ do
 	function pack.Actions.SpawnNumbskull()
 		local enemy = "SwarmerHelmeted"
 		-- ModUtil.Hades.PrintStack("Trying to spawn enemy : "..enemy)
-		for i=1, 5 do
-			pack.Actions.SpawnEnemy(enemy)
-		end
-		return true
-	end
-
-	function pack.Actions.SpawnVoidstone()
-		local enemy = "ShieldRanged"
-		-- ModUtil.Hades.PrintStack("Trying to spawn enemy : "..enemy)
 		return pack.Actions.SpawnEnemy(enemy)
 	end
 
-	function pack.Actions.SpawnPest()
-		local enemy = "ThiefMineLayer"
-		-- ModUtil.Hades.PrintStack("Trying to spawn enemy : "..enemy)
-		for i=1, 5 do
-			pack.Actions.SpawnEnemy(enemy)
-		end
-		return true
-	end
-
-	function pack.Actions.SpawnSnakestone()
-		local enemy = "HeavyRangedForked"
-		-- ModUtil.Hades.PrintStack("Trying to spawn enemy : "..enemy)
-		return pack.Actions.SpawnEnemy(enemy)
-	end
 
 	-- =====================================================
 	-- Effects
@@ -75,6 +52,7 @@ do
 	pack.Effects.SpawnVoidstone = pack.Actions.SpawnVoidstone
 	pack.Effects.SpawnPest = pack.Actions.SpawnPest
 	pack.Effects.SpawnSnakestone = pack.Actions.SpawnSnakestone
+
 
 end
 
