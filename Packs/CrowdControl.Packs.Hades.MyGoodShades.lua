@@ -32,32 +32,8 @@ do
 		return false
 	end
 		
-	-- function pack.Triggers.DuringEncounter(id, action, ...)
-	-- 	if CurrentRun.Hero.IsDead then
-	-- 		return false 
-	-- 	end
-	-- 	local currentEncounter = CurrentRun.CurrentRoom.Encounter
-	-- 	if currentEncounter.EncounterType ~= "NonCombat" and currentEncounter.InProgress = true then
-	-- 		cc.InvokeEffect( id, action, ... )
-	-- 	end
-	-- end
 
-	
 	-- Experimental Triggers 
-
-	-- function pack.Triggers.DuringEncounter()
-	-- 	if CurrentRun.Hero.IsDead then
-	-- 		return false 
-	-- 	end
-	-- 	local currentEncounter = CurrentRun.CurrentRoom.Encounter
-	-- 	return currentEncounter.EncounterType ~= "NonCombat" and currentEncounter.InProgress = true
-	-- end
-
-	-- function pack.Triggers.DuringNonCombat()
-	-- 	return CanOpenCodex() and not CurrentRun.Hero.IsDead
-	-- end
-
-
 	-- function pack.Triggers.NextEncounter()
 	-- 	-- TO FINISH
 	-- 	return false
