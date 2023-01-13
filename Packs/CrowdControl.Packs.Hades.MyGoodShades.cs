@@ -33,7 +33,7 @@ namespace CrowdControl.Games.Packs
             new Effect("Nectar Aid", "Hades.Cornucopia.DropNectar"),
 
             // Legion pack
-            new Effect("Numbskulls", "Hades.Legion.SpawnNumbskulls"),
+            new Effect("Numbskulls", "Hades.Legion.SpawnNumbskull"),
             new Effect("Flamewheels", "Hades.Legion.SpawnFlameWheel"),
             new Effect("Pests", "Hades.Legion.SpawnPest" ),
             new Effect("Voidstone", "Hades.Legion.SpawnVoidstone" ),

@@ -92,8 +92,7 @@ do
 
 				-- That was for you, good Shade!
 				{ Cue = "/VO/ZagreusField_3344"},
-				
-				
+							
 			},
 		}
 		-- ModUtil.Hades.PrintStack("Hello World!")
