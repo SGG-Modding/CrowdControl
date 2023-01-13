@@ -15,6 +15,23 @@ do
 		return false
 	end
 
+	function pack.Triggers.IfInCombat( id, action, ... )
+		if not CurrentRun.Hero.IsDead then
+			local currentEncounter = CurrentRun.CurrentRoom.Encounter
+			if currentEncounter.InProgress and currentEncounter.EncounterType ~= "NonCombat" then
+				cc.InvokeEffect( id, action, ... )
+			end
+		end
+		return false
+	end
+
+	function pack.Triggers.CheckLastStand( id, action, ... )
+		if not CurrentRun.Hero.IsDead and TableLength(CurrentRun.Hero.LastStands) > 0 then
+			cc.InvokeEffect( id, action, ... )
+		end
+		return false
+	end
+		
 	-- function pack.Triggers.DuringEncounter(id, action, ...)
 	-- 	if CurrentRun.Hero.IsDead then
 	-- 		return false 
@@ -104,18 +121,49 @@ do
 	-- Calling Aid. Add 50 to the call gauge
 	function pack.Actions.BuildSuperMeter()
 		if IsSuperValid() then 
-			BuildSuperMeter(CurrentRun, 50)
+			BuildSuperMeter(CurrentRun, CurrentRun.Hero.SuperMeterLimit)
 			return true
 		end
 		return false
 	end	
+
+	-- Adds a Death Defiance (increases maximum if any)
+	function pack.Actions.DDAdd()
+		local atMaxLastStands = CurrentRun.Hero.MaxLastStands == TableLength(CurrentRun.Hero.LastStands)
+		AddLastStand({
+			IncreaseMax = atMaxLastStands,
+			Silent = true,
+			WeaponName = 'LastStandMetaUpgradeShield',
+			Icon = "ExtraLifeHeart",
+			HealFraction = 0.5
+		})
+		UpdateLifePips()
+		return true
+	end
+
+	-- Removes a Death Defiance (if any) 
+	function pack.Actions.DDRemove()
+		LostLastStandPresentation()
+		RemoveLastStand()
+		UpdateLifePips()
+		return true
+	end
+
+	-- Flashbangs the player for 5 secionds
+	function pack.Actions.Flashbang()
+		FadeOut({Color = Color.White, Duration = 0})
+		FadeIn({Duration = 5})
+		return true
+	end
 
 	-- =====================================================
 	-- Effects
 	-- =====================================================
 	pack.Effects.HelloWorld = pack.Actions.SayHello
 	pack.Effects.BuildSuperMeter = cc.RigidEffect( cc.BindEffect( pack.Triggers.IfRunActive, pack.Actions.BuildSuperMeter ) )
-
+	pack.Effects.DDAdd = cc.RigidEffect( cc.BindEffect( pack.Triggers.IfRunActive, pack.Actions.DDAdd))
+	pack.Effects.DDRemove = cc.RigidEffect( cc.BindEffect( pack.Triggers.CheckLastStand, pack.Actions.DDRemove))
+	pack.Effects.Flashbang = cc.BindEffect( pack.Triggers.IfInCombat, pack.Actions.Flashbang)
 end
 
 

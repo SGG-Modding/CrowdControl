@@ -22,12 +22,19 @@ namespace CrowdControl.Games.Packs
         public override List<Effect> Effects { get; } = new()
         {
             new Effect("Hello World", "Hades.MyGoodShades.HelloWorld"),
-            new Effect("No Escape", "Hades.MyGoodShades.TimedKillHero"){ Duration = 10 },
+            new Effect("No Escape", "Hades.MyGoodShades.TimedKillHero"){ Duration = 5 },
 			// new Effect("300 Temporary Money", "Hades.Examples.TempMoney"){ Duration = 10 },
+            new Effect("Add Death Defiance", "Hades.MyGoodShades.DDAdd"),
+            new Effect("Remove Death Defiance", "Hades.MyGoodShades.DDRemove"),
+            new Effect("Flashbang", "Hades.MyGoodShades.Flashbang"),
            
+
+            // Assist pack
+            new Effect("Dusa Assist", "Hades.Assists.DusaAssist"),
+            new Effect("Skelly Assist", "Hades.Assists.SkellyAssist"),
             
             // Cornucopia pack
-            new Effect("Calling Aid", "Hades.MyGoodShades.BuildSuperMeter"),
+            new Effect("Build Call", "Hades.MyGoodShades.BuildSuperMeter"),
             new Effect("Healing Aid", "Hades.Cornucopia.DropHeal"),
             new Effect("Money Aid", "Hades.Cornucopia.DropMoney"),
             new Effect("Nectar Aid", "Hades.Cornucopia.DropNectar"),
@@ -41,7 +48,7 @@ namespace CrowdControl.Games.Packs
             new Effect("Snakestone", "Hades.Legion.SpawnSnakestone" ),
             new Effect("Satyr", "Hades.Legion.SpawnSatyr" ),
 
-            // 
+
 
         };
     }
