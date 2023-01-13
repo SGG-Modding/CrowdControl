@@ -31,6 +31,7 @@ namespace CrowdControl.Games.Packs
             new Effect("Healing Aid", "Hades.Cornucopia.DropHeal"),
             new Effect("Money Aid", "Hades.Cornucopia.DropMoney"),
             new Effect("Nectar Aid", "Hades.Cornucopia.DropNectar"),
+            new Effect("Poison Cure", "Hades.Cornucopia.PoisonCure"),
 
             // Legion pack
             new Effect("Numbskulls", "Hades.Legion.SpawnNumbskull"),

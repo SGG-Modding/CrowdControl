@@ -1,0 +1,9 @@
+{
+	Texts = [
+		"_append"
+		{
+			Id = "CuredText",
+			DisplayName = "{#CombatTextHighlightFormat}Cured!{#PreviousFormat}"
+    	}
+    ]
+}

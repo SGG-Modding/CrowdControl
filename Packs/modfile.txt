@@ -15,3 +15,7 @@ To "CrowdControlContent/CrowdControl.Packs.Hades.Examples.cs"
 Replace "CrowdControl.Packs.Hades.Examples.cs"
 To "CrowdControlContent/CrowdControl.Packs.Hades.MyGoodShades.cs"
 Replace "CrowdControl.Packs.Hades.MyGoodShades.cs"
+
+:: Language Text
+To "Game/Text/en/HelpText.en.sjson"
+SJSON "Text/en/HelpText.en.sjson"

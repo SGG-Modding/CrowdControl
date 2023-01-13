@@ -50,13 +50,65 @@ do
 				}
 			}
 		})
+		return true
 	end
+
+	-- Cures Poison
+	-- Note for developer: code adapted from PoisonCureFountainStyx in ObstacleData.lua and UseStyxFountain in Interactables.lua
+	function pack.Actions.PoisonCure()
+		if not HasEffect({ Id = CurrentRun.Hero.ObjectId, EffectName = "StyxPoison" }) then 
+			return false
+		end
+
+		local CuredVoiceLines =
+		{
+			Cooldowns =
+			{
+				{ Name = "ZagreusAnyQuipSpeech" },
+				{ Name = "ZagCuredPoisonSpeech", Time = 15 }
+			},
+			{
+				BreakIfPlayed = true,
+				RandomRemaining = true,
+				PreLineWait = 0.45,
+				-- RequiredHasEffect = "StyxPoison",
+				SuccessiveChanceToPlay = 0.5,
+
+				-- Whew.
+				{ Cue = "/VO/ZagreusField_2131", },
+				-- Better.
+				{ Cue = "/VO/ZagreusField_2132", },
+				-- There.
+				{ Cue = "/VO/ZagreusField_2133", },
+				-- Cured.
+				{ Cue = "/VO/ZagreusField_2134", },
+				-- Good.
+				{ Cue = "/VO/ZagreusField_2135", },
+				-- OK.
+				{ Cue = "/VO/ZagreusField_2136", },
+				-- Mmm.
+				{ Cue = "/VO/ZagreusField_2137", },
+				-- Clean.
+				{ Cue = "/VO/ZagreusField_2138", },
+			},
+		}
+
+		ClearEffect({ Id = CurrentRun.Hero.ObjectId, Name = "StyxPoison" })
+		BlockEffect({ Id = CurrentRun.Hero.ObjectId, Name = "StyxPoison", Duration = 0.75 })
+		thread(InCombatTextArgs, { TargetId = CurrentRun.Hero.ObjectId, Text = "CuredText", Duration = 0.75 })
+		thread( PlayVoiceLines, CuredVoiceLines, false )
+
+		return true
+	end 
+
+
 	-- =====================================================
 	-- Effects
 	-- =====================================================
 	pack.Effects.DropHeal = pack.Actions.SpawnHealDrop
 	pack.Effects.DropMoney = cc.RigidEffect( cc.BindEffect( packs.Hades.MyGoodShades.Triggers.IfRunActive, pack.Actions.SpawnMoney ) )
 	pack.Effects.DropNectar = pack.Actions.SpawnNectar
+	pack.Effects.PoisonCure = cc.RigidEffect( pack.Actions.PoisonCure )
 
 end
 
@@ -67,7 +119,8 @@ ModUtil.Path.Set( "Hades.Cornucopia", ModUtil.Table.Copy( pack.Effects ), cc.Eff
 -- ModUtil.Path.Wrap( "BeginOpeningCodex", 
 -- 	function(baseFunc)		
 -- 		if not CanOpenCodex() then
--- 			pack.Actions.SpawnNectar()
+-- 		-- if  HasEffect({ Id = CurrentRun.Hero.ObjectId, EffectName = "StyxPoison" }) then 
+-- 			local  test = pack.Actions.PoisonCure()
 -- 		end
 -- 		baseFunc()
 -- 	end
