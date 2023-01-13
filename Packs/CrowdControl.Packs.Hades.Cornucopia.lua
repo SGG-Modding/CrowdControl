@@ -119,8 +119,7 @@ ModUtil.Path.Set( "Hades.Cornucopia", ModUtil.Table.Copy( pack.Effects ), cc.Eff
 -- ModUtil.Path.Wrap( "BeginOpeningCodex", 
 -- 	function(baseFunc)		
 -- 		if not CanOpenCodex() then
--- 		-- if  HasEffect({ Id = CurrentRun.Hero.ObjectId, EffectName = "StyxPoison" }) then 
--- 			local  test = pack.Actions.PoisonCure()
+
 -- 		end
 -- 		baseFunc()
 -- 	end

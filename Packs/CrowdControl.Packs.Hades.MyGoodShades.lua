@@ -126,7 +126,7 @@ ModUtil.Path.Set( "Hades.MyGoodShades", ModUtil.Table.Copy( pack.Effects ), cc.E
 -- ModUtil.Path.Wrap( "BeginOpeningCodex", 
 -- 	function(baseFunc)		
 -- 		if not CanOpenCodex() then
--- 			pack.Actions.SayHello()
+-- 			ModUtil.Hades.PrintStack("Hello World!") 
 -- 		end
 -- 		baseFunc()
 -- 	end

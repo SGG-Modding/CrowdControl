@@ -23,7 +23,7 @@ namespace CrowdControl.Games.Packs
         {
             new Effect("Hello World", "Hades.MyGoodShades.HelloWorld"),
             new Effect("No Escape", "Hades.MyGoodShades.TimedKillHero"){ Duration = 10 },
-			new Effect("300 Temporary Money", "Hades.Examples.TempMoney"){ Duration = 10 },
+			// new Effect("300 Temporary Money", "Hades.Examples.TempMoney"){ Duration = 10 },
            
             
             // Cornucopia pack
@@ -40,6 +40,8 @@ namespace CrowdControl.Games.Packs
             new Effect("Voidstone", "Hades.Legion.SpawnVoidstone" ),
             new Effect("Snakestone", "Hades.Legion.SpawnSnakestone" ),
             new Effect("Satyr", "Hades.Legion.SpawnSatyr" ),
+
+            // 
 
         };
     }

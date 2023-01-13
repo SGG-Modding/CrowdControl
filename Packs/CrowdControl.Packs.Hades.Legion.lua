@@ -9,6 +9,12 @@ do
 	-- Triggers
 	-- =====================================================
 
+	function pack.Triggers.IfNotFirstRoom(id, action, ...)
+		if CurrentRun.CurrentRoom.Name ~= "RoomOpening" then
+				cc.InvokeEffect( id, action, ... )	
+		end
+		return false
+	end
 
 	-- =====================================================
 	-- Actions
@@ -31,7 +37,6 @@ do
 	function pack.Actions.SpawnFlameWheel()
 		local enemy = "ChariotSuicide"
 		-- ModUtil.Hades.PrintStack("Trying to spawn enemy : "..enemy)
-
 		for i=1, 5 do
 			pack.Actions.SpawnEnemy(enemy)
 		end
@@ -79,12 +84,12 @@ do
 	-- =====================================================
 	-- Effects
 	-- =====================================================
-	pack.Effects.SpawnFlameWheel = pack.Actions.SpawnFlameWheel
-	pack.Effects.SpawnNumbskull = pack.Actions.SpawnNumbskull
-	pack.Effects.SpawnVoidstone = pack.Actions.SpawnVoidstone
-	pack.Effects.SpawnPest = pack.Actions.SpawnPest
-	pack.Effects.SpawnSnakestone = pack.Actions.SpawnSnakestone
-	pack.Effects.SpawnSatyr = pack.Actions.SpawnSatyr
+	pack.Effects.SpawnFlameWheel = cc.BindEffect(pack.Triggers.IfNotFirstRoom, pack.Actions.SpawnFlameWheel)
+	pack.Effects.SpawnNumbskull = cc.BindEffect(pack.Triggers.IfNotFirstRoom, pack.Actions.SpawnNumbskull)
+	pack.Effects.SpawnVoidstone = cc.BindEffect(pack.Triggers.IfNotFirstRoom, pack.Actions.SpawnVoidstone)
+	pack.Effects.SpawnPest = cc.BindEffect(pack.Triggers.IfNotFirstRoom, pack.Actions.SpawnPest)
+	pack.Effects.SpawnSnakestone = cc.BindEffect(pack.Triggers.IfNotFirstRoom, pack.Actions.SpawnSnakestone)
+	pack.Effects.SpawnSatyr = cc.BindEffect(pack.Triggers.IfNotFirstRoom, pack.Actions.SpawnSatyr)
 
 end
 
@@ -97,7 +102,12 @@ ModUtil.Path.Set( "Hades.Legion", ModUtil.Table.Copy( pack.Effects ), cc.Effects
 -- 	function(baseFunc)		
 -- 		if not CanOpenCodex() then
 -- 			ModUtil.Hades.PrintStack("Testing Codex function")
--- 			pack.Actions.SpawnFlameWheel()
+-- 			if CurrentRun.CurrentRoom.Name ~= "RoomOpening" then
+-- 				pack.Actions.SpawnNumbskull()
+-- 			else
+-- 				ModUtil.Hades.PrintStack("This is RoomOpening")
+-- 			end
+			
 -- 		end
 -- 		baseFunc()
 -- 	end
