@@ -41,7 +41,8 @@ def NotifyEffect(eid, status=None, timeRemaining=None):
         if eid not in paused:
             paused.add(eid)
     try:
-        thread.socket.send(json.dumps(message).encode('utf-8')+b'\x00')
+        if thread.socket:
+            thread.socket.send(json.dumps(message).encode('utf-8')+b'\x00')
     except ConnectionAbortedError:
         pass
 

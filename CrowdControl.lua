@@ -9,6 +9,7 @@ local cancelled = { }
 local timers = { }
 local rigid = { }
 local ignore = { }
+local stacks = { }
 local shared, notifyEffect
 
 -- Helpers
@@ -109,6 +110,16 @@ local function softEffect( effect )
 	end
 end
 
+local function effectTimes( id )
+	local width = timers[ id ]
+	if not width then return end
+	local start = requestTimes[ id ]
+	local spent = _worldTime - start
+	local final = start + width
+	local ensue = width - spent
+	return spent, ensue, start, final, width
+end
+
 local function timedEffect( enable, disable )
 	return function( id, duration, ... )
 		local ig = ignore[ id ]
@@ -127,6 +138,52 @@ local function timedEffect( enable, disable )
 			timers[ id ] = nil
 		end )
 	end
+end
+
+setmetatable( stacks, {
+	__call = function( self, label )
+		local ids = self[ label ]
+		return ids and #ids or 0
+	end
+} )
+
+local function stackedEffectEnable( label, id )
+	local s = stacks[ label ] or { }
+	stacks[ label ] = s
+	table.insert( s, id )
+	return true
+end
+
+local function stackedEffectDisable( label, id )
+	-- slow remove used so getting length is fast
+	local s = stacks[ label ]
+	for k, v in pairs( s ) do
+		if v == id then
+			s[ k ] = nil
+		end
+	end
+	OverwriteAndCollapseTable( s )
+	return true
+end
+
+local function stackedEffect( label, enable, disable )
+	if enable then
+		enable = ModUtil.Wrap( enable, function( base, id, ... )
+			stackedEffectEnable( label, id )
+			return base( id, ... )
+		end, CrowdControl )
+	else
+		enable = function( id ) return stackedEffectEnable( label, id ) end
+	end
+	if disable then
+		disable = ModUtil.Wrap( disable, function( base, id, ... )
+			stackedEffectDisable( label, id )
+			return base( id, ... )
+		end, CrowdControl )
+	else
+		disable = function( id ) return stackedEffectDisable( label, id ) end
+	end
+	return timedEffect( enable, disable )
 end
 
 -- Implementation
@@ -235,12 +292,17 @@ CrowdControl.TimedEffect = timedEffect
 CrowdControl.PipeEffect = pipeEffect
 CrowdControl.RigidEffect = rigidEffect
 CrowdControl.SoftEffect = softEffect
+CrowdControl.StackedEffect = stackedEffect
+
+CrowdControl.EffectStacks = stacks
+CrowdControl.EffectTimes = effectTimes
 
 -- Internal
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
-	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect, pipeEffect, rigidEffect, softEffect,
-		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers
+	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect, pipeEffect,
+		rigidEffect, softEffect, bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects,
+		cancelled, rigid, ignore, timers, stackedEffect, stacks, effectTimes, stackedEffectEnable, stackedEffectDisable
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControl )
