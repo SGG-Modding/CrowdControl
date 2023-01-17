@@ -192,9 +192,7 @@ local function checkHandledEffects( )
 	for id, duration in rawpairs( timers ) do
 		duration = duration - _worldTime + requestTimes[ id ]
 		timers[ id ] = duration
-		if duration > 0 then
-			notifyEffect( id, "Resumed", duration )
-		end
+		notifyEffect( id, "Resumed", duration )
 	end
 	for i, effectMap in rawipairs( effectMaps ) do
 		local idQueue = idQueues[ effectMap ]
