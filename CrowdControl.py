@@ -41,7 +41,8 @@ def NotifyEffect(eid, status=None, timeRemaining=None):
         if eid not in paused:
             paused.add(eid)
     try:
-        thread.socket.send(json.dumps(message).encode('utf-8')+b'\x00')
+        if thread.socket:
+            thread.socket.send(json.dumps(message).encode('utf-8')+b'\x00')
     except ConnectionAbortedError:
         pass
 
@@ -79,23 +80,28 @@ class AppSocketThread(threading.Thread):
                 s.connect((self.host,self.port))
                 print(f"CrowdControl: Connected on {self.host}:{self.port}")
                 self.socket = s
+                buffer = ''
                 while True:
-                    message = s.recv(1042)
-                    if not message:
+                    chunk = s.recv(1024)
+                    if not chunk:
                         continue
-                    message = message.decode('utf-8').replace(u'\x00','')
-                    message = json.loads(message)
-                    eid = message["id"]
-                    if Shared is None:
-                        print(f"CrowdControl: Need to be loaded into a save to run effects!")
-                        NotifyEffect(eid, "NotReady")
-                        continue
-                    effect = message["code"]
-                    duration = message.get("duration",None)
-                    if duration:
-                        RequestEffect(eid, effect, duration/1000)
-                    else:
-                        RequestEffect(eid, effect)
+                    buffer += chunk.decode('utf-8')
+                    atoms = buffer.split(u'\x00')
+                    if len(atoms) > 1:
+                        buffer = atoms.pop()
+                        for atom in atoms:
+                            message = json.loads(atom)
+                            eid = message["id"]
+                            if Shared is None:
+                                print(f"CrowdControl: Need to be loaded into a save to run effects!")
+                                NotifyEffect(eid, "NotReady")
+                                continue
+                            effect = message["code"]
+                            duration = message.get("duration",None)
+                            if duration:
+                                RequestEffect(eid, effect, duration/1000)
+                            else:
+                                RequestEffect(eid, effect)
             except ConnectionResetError:
                 time.sleep(15)
                 continue
