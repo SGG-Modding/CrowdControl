@@ -27,7 +27,7 @@ do
 		return packs.Base.Parametric.Actions.Invoke( ModUtil.Hades.PrintStack, ... )
 	end
 
-	-- Spawn Item Consumable Actopm
+	-- Spawn obols
 	function pack.Actions.SpawnMoney()
 		local dropItemName = "MinorMoneyDrop"
 		GiveRandomConsumables({
