@@ -26,12 +26,40 @@ do
 	function pack.Parametric.Actions.PrintStack( ... )
 		return packs.Base.Parametric.Actions.Invoke( ModUtil.Hades.PrintStack, ... )
 	end
+
+	-- Spawn Item Consumable Actopm
+	function pack.Actions.SpawnMoney()
+		local dropItemName = "MinorMoneyDrop"
+		GiveRandomConsumables({
+			Delay = 0.5,
+			NotRequiredPickup = true,
+			LootOptions =
+			{
+				{
+					Name = dropItemName,
+					Chance = 1,
+				}
+			}
+		})
+		return true
+	end
+
+	-- Spawns a small heal drop (heals for 10)
+	function pack.Actions.SpawnHealDrop()
+		DropHealth( "HealDropMinor", CurrentRun.Hero.ObjectId )
+		return true
+	end
+
 	
 	-- Effects
 	pack.Effects.HelloWorld = pack.Parametric.Actions.PrintStack( "Hello World!" )
 	pack.Effects.TimedKillHero = cc.BindEffect( packs.Hades.Base.Triggers.IfCanMove, pack.Actions.KillHero )
 	pack.Effects.TempMoney = cc.RigidEffect( cc.BindEffect( packs.Base.Parametric.Triggers.AntiCondition( "CurrentRun.Hero.IsDead" ),
 		 cc.TimedEffect( pack.Parametric.Actions.AddMoney( 300 ), pack.Parametric.Actions.AddMoney( -300 ) ) ) )
+	pack.Effects.DropHeal = pack.Actions.SpawnHealDrop
+	pack.Effects.DropMoney = cc.RigidEffect( cc.BindEffect( packs.Base.Parametric.Triggers.AntiCondition( "CurrentRun.Hero.IsDead" ), pack.Actions.SpawnMoney ) )
+	 
+
 
 end
 

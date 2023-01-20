@@ -24,6 +24,9 @@ namespace CrowdControl.Games.Packs
             new Effect("Hello World", "Hades.Examples.HelloWorld"),
             new Effect("Timed Kill Hero", "Hades.Examples.TimedKillHero"){ Duration = 20 },
 			new Effect("300 Temporary Money", "Hades.Examples.TempMoney"){ Duration = 10 },
+
+            new Effect("Healing Aid", "Hades.Examples.DropHeal"),
+            new Effect("Money Aid", "Hades.Examples.DropMoney"),
         };
     }
 }
