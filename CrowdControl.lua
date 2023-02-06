@@ -121,7 +121,7 @@ local function timedEffect( enable, disable )
 		notifyEffect( id, "Success", duration )
 		thread( function( )
 			wait( duration )
-			if disable then
+			if timers[ id ] and disable then
 				invokeEffect( id, disable, table.unpack( args ) )
 			end
 			timers[ id ] = nil
@@ -135,8 +135,10 @@ local function checkHandledEffects( )
 	for id, duration in rawpairs( timers ) do
 		duration = duration - _worldTime + requestTimes[ id ]
 		timers[ id ] = duration
-		if duration > 0 then
+		if duration >= 0 then
 			notifyEffect( id, "Resumed", duration )
+		else
+			print( "CrowdControl: Error: Effect with ID " .. id .. " has negative duration" )
 		end
 	end
 	for i, effectMap in rawipairs( effectMaps ) do
@@ -198,8 +200,38 @@ local function initShared( )
 end
 
 local function cancelEffect( message )
-	local id = tonumber( message )
-	cancelled[ id ] = true
+	local eid = tonumber( message )
+	cancelled[ eid ] = true
+	for i, effectMap in rawipairs( effectMaps ) do
+		effectMap[ eid ] = nil
+		local idQueue = idQueues[ effectMap ]
+		if idQueue then
+			for i, id in rawipairs( idQueue ) do
+				if id == eid then
+					idQueue[ i ] = nil
+				end
+			end
+			OverwriteAndCollapseTable( idQueue )
+		end
+	end
+end
+
+local function resetEffects( )
+	for k in pairs( cancelled ) do
+		cancelled[ k ] = nil
+	end
+	for k in pairs( rigid ) do
+		rigid[ k ] = nil
+	end
+	for k in pairs( ignore ) do
+		ignore[ k ] = nil
+	end
+	for k in pairs( timers ) do
+		timers[ k ] = nil
+	end
+	for k in pairs( requestTimes ) do
+		requestTimes[ k ] = nil
+	end
 	for i, effectMap in rawipairs( effectMaps ) do
 		local idQueue = idQueues[ effectMap ]
 		if idQueue then
@@ -240,11 +272,12 @@ CrowdControl.SoftEffect = softEffect
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
 	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect, pipeEffect, rigidEffect, softEffect,
-		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers
+		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers, resetEffects
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControl )
-StyxScribe.AddEarlyHook( cancelEffect, "StyxScribeShared: Cancel: ", CrowdControl )
+StyxScribe.AddEarlyHook( cancelEffect, "CrowdControl: Cancel: ", CrowdControl )
+StyxScribe.AddEarlyHook( resetEffects, "CrowdControl: Reset", CrowdControl )
 
 initShared( )
 

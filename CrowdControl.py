@@ -103,12 +103,15 @@ class AppSocketThread(threading.Thread):
                             else:
                                 RequestEffect(eid, effect)
             except ConnectionResetError:
-                time.sleep(15)
-                continue
+                pass
             except ConnectionRefusedError:
                 time.sleep(5)
-                continue
+                pass
             except ConnectionAbortedError:
+                pass
+            finally:
+                if Shared is not None:
+                    Scribe.Send("CrowdControl: Reset")
                 time.sleep(5)
                 continue
 
