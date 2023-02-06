@@ -138,7 +138,7 @@ local function checkHandledEffects( )
 		if duration >= 0 then
 			notifyEffect( id, "Resumed", duration )
 		else
-			print( "CrowdControl: Error: Effect with ID " .. id .. " has negative duration" )
+			StyxScribe.Send( "CrowdControl: Error: Effect with ID " .. id .. " has negative duration" )
 		end
 	end
 	for i, effectMap in rawipairs( effectMaps ) do
@@ -202,6 +202,10 @@ end
 local function cancelEffect( message )
 	local eid = tonumber( message )
 	cancelled[ eid ] = true
+	timers[ eid ] = nil
+	requestTimes[ eid ] = nil
+	rigid[ eid ] = nil
+	ignore[ eid ] = nil
 	for i, effectMap in rawipairs( effectMaps ) do
 		effectMap[ eid ] = nil
 		local idQueue = idQueues[ effectMap ]
