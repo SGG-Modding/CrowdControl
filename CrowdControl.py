@@ -47,7 +47,10 @@ def NotifyEffect(eid, status=None, timeRemaining=None):
         pass
 
 def RequestEffect(eid, effect, *args):
-    print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
+    if args:
+        print(f"CrowdControl: Requesting effect {effect} with ID {eid} and parameters {', '.join(args)}")
+    else:
+        print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
     if not Scribe.LuaActive and time.time() - Scribe.LastLuaInactiveTime > TIMEOUT:
         return NotifyEffect(eid,"Retry")
     effects.add(eid)
@@ -75,10 +78,12 @@ class AppSocketThread(threading.Thread):
         print("CrowdControl: Socket Thread Running!")
         while True:
             #print(f"CrowdControl: Attempting to connect on {self.host}:{self.port}")
+            do_reset = False
             try:
                 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                 s.connect((self.host,self.port))
                 print(f"CrowdControl: Connected on {self.host}:{self.port}")
+                do_reset = True
                 self.socket = s
                 buffer = ''
                 while True:
@@ -98,8 +103,15 @@ class AppSocketThread(threading.Thread):
                                 continue
                             effect = message["code"]
                             duration = message.get("duration",None)
+                            parameters = message.get("parameters",None)
                             if duration:
-                                RequestEffect(eid, effect, duration/1000)
+                                duration /= 1000
+                            if duration and parameters:
+                                RequestEffect(eid, effect, duration, *parameters)
+                            elif parameters:
+                                RequestEffect(eid, effect, *parameters)
+                            elif duration:
+                                RequestEffect(eid, effect, duration)
                             else:
                                 RequestEffect(eid, effect)
             except ConnectionResetError:
@@ -110,8 +122,9 @@ class AppSocketThread(threading.Thread):
             except ConnectionAbortedError:
                 pass
             finally:
-                if Shared is not None:
+                if do_reset and Shared is not None:
                     Scribe.Send("CrowdControl: Reset")
+                    do_reset = False
                 time.sleep(5)
                 continue
 

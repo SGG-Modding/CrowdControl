@@ -95,6 +95,12 @@ local function bindEffect( effect, value )
 	end
 end
 
+local function keyedEffect( effect )
+	return function( id, key, ... )
+		return invokeEffect( id, effect[key], ... )
+	end
+end
+
 local function rigidEffect( effect )
 	return function( id, ... )
 		rigid[ id ] = true
@@ -138,7 +144,7 @@ local function checkHandledEffects( )
 		if duration >= 0 then
 			notifyEffect( id, "Resumed", duration )
 		else
-			StyxScribe.Send( "CrowdControl: Error: Effect with ID " .. id .. " has negative duration" )
+			print( "CrowdControl: Error: Effect with ID " .. id .. " has negative duration" )
 		end
 	end
 	for i, effectMap in rawipairs( effectMaps ) do
@@ -202,10 +208,6 @@ end
 local function cancelEffect( message )
 	local eid = tonumber( message )
 	cancelled[ eid ] = true
-	timers[ eid ] = nil
-	requestTimes[ eid ] = nil
-	rigid[ eid ] = nil
-	ignore[ eid ] = nil
 	for i, effectMap in rawipairs( effectMaps ) do
 		effectMap[ eid ] = nil
 		local idQueue = idQueues[ effectMap ]
@@ -267,6 +269,7 @@ CrowdControl.InvokeEffects = invokeEffects
 CrowdControl.HandleEffects = handleEffects
 CrowdControl.CheckEffect = checkEffect
 CrowdControl.BindEffect = bindEffect
+CrowdControl.KeyedEffect = keyedEffect
 CrowdControl.TimedEffect = timedEffect
 CrowdControl.PipeEffect = pipeEffect
 CrowdControl.RigidEffect = rigidEffect
@@ -276,7 +279,7 @@ CrowdControl.SoftEffect = softEffect
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
 	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect, pipeEffect, rigidEffect, softEffect,
-		bindEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers, resetEffects
+		bindEffect, keyedEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers, resetEffects
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControl )
