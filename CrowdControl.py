@@ -7,12 +7,17 @@ import json
 __all__ = ["Load", "RequestEffect", "NotifyEffect", "Internal"]
 
 Shared = None
+thread = None
 
 TIMEOUT = 15
+REMOTE = 208
 
 effects = set()
 timed = set()
 paused = set()
+last_put = 0
+last_get = 0
+receivers = dict()
 
 def NotifyEffect(eid, status=None, timeRemaining=None):
     if status is None:
@@ -48,7 +53,7 @@ def NotifyEffect(eid, status=None, timeRemaining=None):
 
 def RequestEffect(eid, effect, *args):
     if args:
-        print(f"CrowdControl: Requesting effect {effect} with ID {eid} and parameters {', '.join(args)}")
+        print(f"CrowdControl: Requesting effect {effect}({', '.join(args)}) with ID {eid}")
     else:
         print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
     if not Scribe.LuaActive and time.time() - Scribe.LastLuaInactiveTime > TIMEOUT:
@@ -59,7 +64,47 @@ def RequestEffect(eid, effect, *args):
     except KeyError:
         pass
 
-thread = None
+def SendRemoteFunction(cid, method, *args):
+    global last_put
+    last_put = last_put + 1
+    receivers[last_put] = cid
+    cid = last_put
+    
+    message = {"id":cid, "type":208, "method":method}
+    if args:
+        message["args"] = args
+
+    if args:
+        print(f"CrowdControl: Sending remote {method}({', '.join(args)}) with ID {cid}")
+    else:
+        print(f"CrowdControl: Sending remote {method} with ID {cid}")
+    
+    try:
+        if thread.socket:
+            thread.socket.send(json.dumps(message).encode('utf-8')+b'\x00')
+    except ConnectionAbortedError:
+        pass
+
+def ReceiveRemoteFunction(*args):
+    # assume the order of reception is the order of sending
+    # this is very risky...
+    global last_get
+    last_get = last_get + 1
+    if last_get not in receivers:
+        raise RuntimeError("Remote function messsages are out of sync!")
+    cid = receivers[last_get]
+    del receivers[last_get]
+    
+    if args:
+        print(f"CrowdControl: Received result ({', '.join(args)}) with ID {cid}")
+    else:
+        print(f"CrowdControl: Received result with ID {cid}")
+
+    try:
+        return Shared.ReceiveRemoteFunction(cid, *args)
+    except KeyError:
+        pass
+
 class AppSocketThread(threading.Thread):
     #repurposed from:
     # - https://stackoverflow.com/questions/27284358/connect-to-socket-on-localhost
@@ -101,6 +146,10 @@ class AppSocketThread(threading.Thread):
                                 print(f"CrowdControl: Need to be loaded into a save to run effects!")
                                 NotifyEffect(eid, "NotReady")
                                 continue
+                            if message.get("type",None) == REMOTE:
+                                value = message.get("value",None)
+                                ReceiveRemoteFunction(value)
+                                continue
                             effect = message["code"]
                             duration = message.get("duration",None)
                             parameters = message.get("parameters",None)
@@ -140,6 +189,7 @@ def Load():
             root.CrowdControl = {}
             Shared = root.CrowdControl
         Shared.NotifyEffect = NotifyEffect
+        Shared.SendRemoteFunction = SendRemoteFunction
 
     def onInactive():
         for e in tuple(e for e in timed if e not in paused):

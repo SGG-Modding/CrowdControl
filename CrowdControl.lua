@@ -9,6 +9,8 @@ local cancelled = { }
 local timers = { }
 local rigid = { }
 local ignore = { }
+local receivers = { }
+local lastRemote = 0
 local shared, notifyEffect
 
 -- Helpers
@@ -194,6 +196,21 @@ local function requestEffect( id, effect, ... )
 	return invokeEffect( id, func, ... )
 end
 
+local function sendRemoteFunction( method, receiver, ... )
+	lastRemote = lastRemote + 1
+	receivers[ lastRemote ] = receiver
+	return shared.SendRemoteFunction( lastRemote, method, ... )
+end
+
+local function receiveRemoteFunction( id, ... )
+	local receiver = receivers[ id ]
+	if receiver == nil then
+		return
+	end
+	receivers[ id ] = nil
+	return receiver( ... )
+end
+
 local function initShared( )
 	local root = StyxScribeShared.Root
 	shared = root.CrowdControl
@@ -203,6 +220,7 @@ local function initShared( )
 	end
 	CrowdControl.Shared = shared
 	shared.RequestEffect = requestEffect
+	shared.ReceiveRemoteFunction = receiveRemoteFunction
 end
 
 local function cancelEffect( message )
@@ -264,6 +282,9 @@ CrowdControl.Effects = { }
 CrowdControl.RequestEffect = requestEffect
 CrowdControl.NotifyEffect = notifyEffect
 
+CrowdControl.SendRemoteFunction = sendRemoteFunction
+CrowdControl.ReceiveRemoteFunction = receiveRemoteFunction
+
 CrowdControl.InvokeEffect = invokeEffect
 CrowdControl.InvokeEffects = invokeEffects
 CrowdControl.HandleEffects = handleEffects
@@ -279,7 +300,8 @@ CrowdControl.SoftEffect = softEffect
 
 CrowdControl.Internal = ModUtil.UpValues( function( )
 	return initShared, requestEffect, notifyEffect, invokeEffect, invokeEffects, timedEffect, cancelEffect, pipeEffect, rigidEffect, softEffect,
-		bindEffect, keyedEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers, resetEffects
+		bindEffect, keyedEffect, checkEffect, handleEffects, checkHandledEffects, routineCheckHandledEffects, cancelled, rigid, ignore, timers,
+		resetEffects, sendRemoteFunction, receiveRemoteFunction, receivers, lastRemote
 end )
 
 StyxScribe.AddHook( initShared, "StyxScribeShared: Reset", CrowdControl )
