@@ -53,7 +53,8 @@ def NotifyEffect(eid, status=None, timeRemaining=None):
 
 def RequestEffect(eid, effect, *args):
     if args:
-        print(f"CrowdControl: Requesting effect {effect}({', '.join(args)}) with ID {eid}")
+        params = ', '.join(map(repr,args))
+        print(f"CrowdControl: Requesting effect {effect}({params}) with ID {eid}")
     else:
         print(f"CrowdControl: Requesting effect {effect} with ID {eid}")
     if not Scribe.LuaActive and time.time() - Scribe.LastLuaInactiveTime > TIMEOUT:
@@ -75,7 +76,8 @@ def SendRemoteFunction(cid, method, *args):
         message["args"] = args
 
     if args:
-        print(f"CrowdControl: Sending remote {method}({', '.join(args)}) with ID {cid}")
+        params = ', '.join(map(repr,args))
+        print(f"CrowdControl: Sending remote {method}({params}) with ID {cid}")
     else:
         print(f"CrowdControl: Sending remote {method} with ID {cid}")
     
@@ -96,7 +98,8 @@ def ReceiveRemoteFunction(*args):
     del receivers[last_get]
     
     if args:
-        print(f"CrowdControl: Received result ({', '.join(args)}) with ID {cid}")
+        params = ', '.join(map(repr,args))
+        print(f"CrowdControl: Received result ({params}) with ID {cid}")
     else:
         print(f"CrowdControl: Received result with ID {cid}")
 
@@ -170,12 +173,11 @@ class AppSocketThread(threading.Thread):
                 pass
             except ConnectionAbortedError:
                 pass
-            finally:
-                if do_reset and Shared is not None:
-                    Scribe.Send("CrowdControl: Reset")
-                    do_reset = False
-                time.sleep(5)
-                continue
+            if do_reset and Shared is not None:
+                Scribe.Send("CrowdControl: Reset")
+                do_reset = False
+            time.sleep(5)
+            continue
 
 def Load():
     #start the app socket thread
