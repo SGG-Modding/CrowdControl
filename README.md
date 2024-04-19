@@ -1,3 +1,7 @@
+## Fleshed Out Pack
+
+For a fleshed out effects pack for this framework see [MyGoodShades](https://github.com/phypoh/MyGoodShades).
+
 # Crowd Control for SGG Games
 
 Should work on Hades and Pyre and hopefully Hades 2 after some minor alterations.    
